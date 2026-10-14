@@ -110,7 +110,8 @@ PRD 기능: F7, F9, F11
 
 PRD 기능: F8
 
-- [ ] T22 `POST /api/recommendations/tag`: 조건을 받아 `winner_tag`와 룰렛 칸에 올릴 태그 목록(`wheel`, 최대 8개) 반환
+- [x] T22 `POST /api/recommendations/tag`: 조건을 받아 `winner_tag`와 룰렛 칸에 올릴 태그 목록(`wheel`, 최대 8개) 반환
+  - 구현 내용: `POST /api/recommendations/tag`가 식당 룰렛과 같은 요청 형식을 받아, 가격 범위·가본 곳 여부·`exclude_ids` 조건에 맞는 식당이 하나라도 붙은 태그를 후보로 삼고(태그를 보내면 그 태그들 안에서), 무작위 `winner_tag`와 당첨을 포함한 최대 8개의 `wheel`을 돌려준다. 후보 태그가 없으면 `NO_CANDIDATES`를 돌려준다. 로직은 `services/recommend.py`의 `recommend_tag`에 두고 칸 구성은 식당 룰렛과 같은 함수를 쓴다. 시험 태그 10개로 8칸 제한·당첨 포함·중복 없음, 100회 당첨이 10종류에 고르게 나오는 것, 가본 곳·태그 지정·제외 조건, 후보 없음을 curl로 확인했다. 시험 식당은 API로, 시험 태그는 앱의 DB 세션으로 이름을 지정해 삭제했다.
 - [ ] T23 태그 룰렛 화면
 - [ ] T24 당첨 태그를 식당 룰렛의 음식 종류 조건에 자동으로 채우되, 사용자가 바꿀 수 있게 하기
 

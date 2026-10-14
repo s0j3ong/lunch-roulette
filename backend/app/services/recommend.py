@@ -5,7 +5,13 @@ from sqlalchemy.orm import Session, selectinload
 
 from app.config import CURRENT_USER_ID
 from app.models import Restaurant, Tag
-from app.schemas import RecommendationRequest, RecommendationResponse, RestaurantListItem
+from app.schemas import (
+    RecommendationRequest,
+    RecommendationResponse,
+    RestaurantListItem,
+    TagRecommendationResponse,
+    TagResponse,
+)
 from app.services.filters import apply_restaurant_filters
 
 
@@ -58,4 +64,36 @@ def recommend_restaurant(session: Session, request: RecommendationRequest) -> Re
         winner=_list_item(winner),
         wheel=[_list_item(restaurant) for restaurant in wheel],
         remaining=len(candidates) - 1,
+    )
+
+
+def recommend_tag(session: Session, request: RecommendationRequest) -> TagRecommendationResponse:
+    # 가격·가본 곳·제외 조건에 맞는 식당이 하나라도 붙은 태그만 후보로 한다.
+    restaurant_ids = apply_restaurant_filters(
+        select(Restaurant.id),
+        tags=[],
+        price_min=request.price_min,
+        price_max=request.price_max,
+        visited=request.visited,
+    )
+    if request.exclude_ids:
+        restaurant_ids = restaurant_ids.where(Restaurant.id.not_in(request.exclude_ids))
+
+    statement = select(Tag).where(
+        Tag.user_id == CURRENT_USER_ID,
+        Tag.restaurants.any(Restaurant.id.in_(restaurant_ids)),
+    )
+    # 태그를 골라 보냈으면 그 태그들 안에서만 고른다.
+    if request.tags:
+        statement = statement.where(Tag.name.in_(request.tags))
+
+    candidates = list(session.scalars(statement).all())
+    if not candidates:
+        raise NoCandidatesError
+
+    winner = random.choice(candidates)
+    wheel = _build_wheel(winner, candidates, key=lambda tag: tag.id)
+    return TagRecommendationResponse(
+        winner_tag=TagResponse(id=winner.id, name=winner.name, is_default=winner.is_default),
+        wheel=[TagResponse(id=tag.id, name=tag.name, is_default=tag.is_default) for tag in wheel],
     )

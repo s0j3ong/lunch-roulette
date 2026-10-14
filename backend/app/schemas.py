@@ -94,3 +94,8 @@ class RecommendationResponse(BaseModel):
     winner: RestaurantListItem
     wheel: list[RestaurantListItem]
     remaining: int
+
+
+class TagRecommendationResponse(BaseModel):
+    winner_tag: TagResponse
+    wheel: list[TagResponse]
