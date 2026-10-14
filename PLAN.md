@@ -82,8 +82,10 @@ PRD 기능: F3, F5
 
 PRD 기능: F6, F10
 
-- [ ] T15 `POST /api/recommendations`: 조건 필터링, 무작위 선택, 최대 8곳의 `wheel`, `exclude_ids`, `remaining`, `NO_CANDIDATES`
-- [ ] T16 로직은 `services/recommend.py`에 두고 라우터는 얇게 유지
+- [x] T15 `POST /api/recommendations`: 조건 필터링, 무작위 선택, 최대 8곳의 `wheel`, `exclude_ids`, `remaining`, `NO_CANDIDATES`
+  - 구현 내용: `POST /api/recommendations`가 태그·가격 범위·가본 곳 여부·`exclude_ids`를 받아 후보를 거르고, 무작위 당첨(`winner`), 당첨을 포함한 최대 8칸의 무작위 순서 `wheel`, 당첨을 뺀 `remaining`을 돌려준다. 후보가 없으면 404와 `{"code": "NO_CANDIDATES", "message": ...}`를, 최저가가 최고가보다 크면 422를 돌려준다. 시험 식당 10곳으로 8칸 제한·당첨 포함·칸 중복 없음, 당첨을 계속 제외하며 10번 돌려 제외 식당이 다시 나오지 않고 `remaining`이 9→0으로 줄다가 `NO_CANDIDATES`가 나는 것, 후보 1·2곳, 조건 없음일 때 전체 식당이 후보인 것을 확인했고 시험 데이터는 삭제했다.
+- [x] T16 로직은 `services/recommend.py`에 두고 라우터는 얇게 유지
+  - 구현 내용: 필터 조건은 `services/filters.py`, 후보 조회·무작위 당첨·칸 구성은 `services/recommend.py`에 두고, `routers/recommendations.py`는 요청을 서비스에 넘기고 `NoCandidatesError`를 `NO_CANDIDATES` 응답으로 바꾸는 일만 한다.
 
 완료 기준: `/docs`에서 호출하면 당첨 식당과 칸 목록이 나오고, `exclude_ids`에 넣은 식당은 나오지 않는다. 조건을 비우면 모든 식당이 후보가 된다.
 

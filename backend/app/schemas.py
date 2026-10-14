@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
 
 
 class RestaurantCreate(BaseModel):
@@ -69,3 +69,28 @@ class TagResponse(BaseModel):
 class PriceRangeResponse(BaseModel):
     min_price: int | None
     max_price: int | None
+
+
+class RecommendationRequest(BaseModel):
+    tags: list[str] = Field(default_factory=list)
+    price_min: int | None = Field(default=None, ge=0)
+    price_max: int | None = Field(default=None, ge=0)
+    visited: bool | None = None
+    exclude_ids: list[int] = Field(default_factory=list)
+
+    @field_validator("tags")
+    @classmethod
+    def normalize_tags(cls, values: list[str]) -> list[str]:
+        return list(dict.fromkeys(value.strip() for value in values if value.strip()))
+
+    @model_validator(mode="after")
+    def check_price_range(self) -> "RecommendationRequest":
+        if self.price_min is not None and self.price_max is not None and self.price_min > self.price_max:
+            raise ValueError("최저 가격이 최고 가격보다 클 수 없어요.")
+        return self
+
+
+class RecommendationResponse(BaseModel):
+    winner: RestaurantListItem
+    wheel: list[RestaurantListItem]
+    remaining: int
