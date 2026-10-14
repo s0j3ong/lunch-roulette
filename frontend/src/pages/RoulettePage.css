@@ -119,3 +119,33 @@
   color: var(--color-ink-muted);
   font-size: 0.9rem;
 }
+
+.roulette-stage .empty-state {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem 1rem;
+  border: 1px dashed var(--color-border);
+  border-radius: 0.75rem;
+  color: var(--color-ink-muted);
+}
+
+.roulette-stage .empty-state p {
+  margin: 0.25rem 0;
+}
+
+.roulette-stage .empty-state .primary-button,
+.roulette-stage .empty-state .secondary-button {
+  margin-top: 0.75rem;
+}
+
+.link-button {
+  display: inline-flex;
+  align-items: center;
+  box-sizing: border-box;
+  text-decoration: none;
+}
+
+.last-candidate {
+  color: var(--color-ink);
+  font-weight: 600;
+}
