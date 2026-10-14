@@ -3,6 +3,7 @@
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   line-height: 1.5;
+  word-break: keep-all;
   color: var(--color-ink);
   background: var(--color-bg);
 }

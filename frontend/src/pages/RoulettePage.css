@@ -1,0 +1,37 @@
+.roulette-page {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.roulette-conditions {
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+}
+
+.roulette-conditions h1 {
+  margin: 0;
+  font-size: 1.5rem;
+}
+
+.section-description {
+  margin: 0.35rem 0 0;
+  color: var(--color-ink-muted);
+}
+
+.condition-fields {
+  display: grid;
+  gap: 1.25rem;
+  margin-top: 1.25rem;
+}
+
+.error-text {
+  color: var(--color-danger);
+}
+
+@media (max-width: 480px) {
+  .roulette-conditions {
+    padding: 1rem;
+  }
+}
