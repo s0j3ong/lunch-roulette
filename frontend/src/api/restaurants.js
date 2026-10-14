@@ -38,8 +38,18 @@ export function getTags(signal) {
   return request('/api/tags', { signal })
 }
 
-export function getRestaurants(signal) {
-  return request('/api/restaurants', { signal })
+export function getRestaurants(filters = {}, signal) {
+  const params = new URLSearchParams()
+  for (const tag of filters.tags ?? []) params.append('tag', tag)
+  if (filters.priceMin != null) params.set('price_min', filters.priceMin)
+  if (filters.priceMax != null) params.set('price_max', filters.priceMax)
+  if (filters.visited != null) params.set('visited', filters.visited)
+  const query = params.toString()
+  return request(`/api/restaurants${query ? `?${query}` : ''}`, { signal })
+}
+
+export function getPriceRange(signal) {
+  return request('/api/price-range', { signal })
 }
 
 export function getRestaurant(id, signal) {
