@@ -71,7 +71,8 @@ PRD 기능: F1, F2, F3, F4
 
 PRD 기능: F3, F5
 
-- [ ] T13 가격 범위 API(`GET /api/price-range`)와 목록 API의 `tag`, `price_min`, `price_max`, `visited` 필터
+- [x] T13 가격 범위 API(`GET /api/price-range`)와 목록 API의 `tag`, `price_min`, `price_max`, `visited` 필터
+  - 구현 내용: `GET /api/price-range`가 고정 사용자의 식당 최저·최고 가격(없으면 `null`)을 돌려주고, `GET /api/restaurants`가 `tag`(여러 번 지정 가능), `price_min`, `price_max`, `visited` 쿼리를 받는다. 조건 적용은 추천에서도 다시 쓰도록 `services/filters.py`에 두고, 여러 태그는 하나라도 붙으면 포함, 가격 범위를 정하면 가격 있는 식당만 포함한다. 최저가가 최고가보다 크면 422를 돌려준다. 시험 식당 세 곳으로 태그 단일·복수, 가격 범위, 가격 없는 식당 제외, 가본 곳 여부, 조합 조건, 잘못된 범위를 curl로 확인했고 시험 데이터는 삭제했다.
 - [ ] T14 목록 화면의 태그 필터와 최저가~최고가 범위 선택
 
 완료 기준: 태그와 가격 범위를 바꾸면 목록이 조건에 맞게 줄어든다.

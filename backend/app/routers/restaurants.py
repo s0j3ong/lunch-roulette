@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
@@ -8,6 +8,7 @@ from app.config import CURRENT_USER_ID, DEFAULT_TAG_NAMES
 from app.database import get_db
 from app.models import Restaurant, Tag
 from app.schemas import RestaurantCreate, RestaurantListItem, RestaurantResponse, RestaurantUpdate
+from app.services.filters import apply_restaurant_filters
 
 
 router = APIRouter(prefix="/api/restaurants", tags=["restaurants"])
@@ -64,13 +65,24 @@ def _response(restaurant: Restaurant) -> RestaurantResponse:
 
 
 @router.get("", response_model=list[RestaurantListItem])
-def list_restaurants(session: Session = Depends(get_db)) -> list[RestaurantListItem]:
-    restaurants = session.scalars(
-        select(Restaurant)
-        .options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID)))
-        .where(Restaurant.user_id == CURRENT_USER_ID)
-        .order_by(Restaurant.id)
-    ).all()
+def list_restaurants(
+    tag: list[str] = Query(default=[], description="음식 종류 태그. 여러 개면 하나라도 붙은 식당"),
+    price_min: int | None = Query(default=None, ge=0),
+    price_max: int | None = Query(default=None, ge=0),
+    visited: bool | None = None,
+    session: Session = Depends(get_db),
+) -> list[RestaurantListItem]:
+    if price_min is not None and price_max is not None and price_min > price_max:
+        raise HTTPException(status_code=422, detail="최저 가격이 최고 가격보다 클 수 없어요.")
+
+    statement = apply_restaurant_filters(
+        select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID))),
+        tags=[name.strip() for name in tag if name.strip()],
+        price_min=price_min,
+        price_max=price_max,
+        visited=visited,
+    )
+    restaurants = session.scalars(statement.order_by(Restaurant.id)).all()
     return [
         RestaurantListItem(
             id=restaurant.id,

@@ -64,3 +64,8 @@ class TagResponse(BaseModel):
     id: int
     name: str
     is_default: bool
+
+
+class PriceRangeResponse(BaseModel):
+    min_price: int | None
+    max_price: int | None
