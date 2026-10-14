@@ -28,7 +28,8 @@ PRD의 1차 버전을 여덟 단계(0~7단계)로 나누고, 단계가 끝날 �
 
 - [x] T01 MariaDB를 설치하고, 이 서비스 전용 DB와 계정을 만든다
   - 구현 내용: MariaDB가 이미 설치되어 실행 중인 것을 확인했다. `lunch@localhost` 계정의 `lunch_box` 접속과 해당 데이터베이스 권한을 확인했으며, 기존 구성을 유지해 새로 만들거나 초기화하지 않았다.
-- [ ] T02 `backend`: 가상환경과 `requirements.txt` 작성(FastAPI, uvicorn, SQLAlchemy, MariaDB 드라이버)
+- [x] T02 `backend`: 가상환경과 `requirements.txt` 작성(FastAPI, uvicorn, SQLAlchemy, MariaDB 드라이버)
+  - 구현 내용: `backend/requirements.txt`에 FastAPI, Uvicorn, SQLAlchemy, PyMySQL을 선언하고 `backend/.venv`에 설치했다. 패키지 import와 SQLAlchemy의 PyMySQL 방언 사용 가능 여부, `pip check`를 확인했다. 가상환경은 `.gitignore` 규칙으로 Git 추적 대상에서 제외했다.
 - [ ] T03 `backend`: 테스트 응답을 돌려주는 `GET /api/health` 작성, `.env`에서 DB 접속 정보 읽기
 - [ ] T04 `frontend`: Vite로 React 프로젝트 생성, `vite.config.js`에 `/api` 프록시 설정
 - [ ] T05 `frontend`: `src/styles/theme.css`에 PRD 6장의 색상 토큰 정의
