@@ -5,7 +5,7 @@ import Wheel from './Wheel'
 import './TagRoulette.css'
 
 // 음식 종류부터 정하기 어려울 때 쓰는 태그 룰렛. 당첨 태그는 서버가 정한다.
-function TagRoulette({ priceRange, visited, disabled, onSpinningChange }) {
+function TagRoulette({ priceRange, visited, disabled, onSpinningChange, onResult }) {
   const [wheel, setWheel] = useState([])
   const [winnerTag, setWinnerTag] = useState(null)
   const [isSpinning, setIsSpinning] = useState(false)
@@ -33,6 +33,7 @@ function TagRoulette({ priceRange, visited, disabled, onSpinningChange }) {
       setWheel(response.wheel)
       await spinTo(winnerIndex, response.wheel.length)
       setWinnerTag(response.winner_tag)
+      onResult(response.winner_tag.name)
     } catch (spinError) {
       setError(
         spinError.code === 'NO_CANDIDATES'
@@ -59,6 +60,9 @@ function TagRoulette({ priceRange, visited, disabled, onSpinningChange }) {
             {winnerTag && (
               <p className="tag-roulette-result">
                 오늘은 <strong>{winnerTag.name}</strong> 어때요?
+                <span className="tag-roulette-note">
+                  식당 룰렛의 음식 종류 조건에 넣었어요. 위에서 바꿀 수 있어요.
+                </span>
               </p>
             )}
           </div>

@@ -147,6 +147,7 @@ function RoulettePage() {
             visited={visited}
             disabled={isSpinning}
             onSpinningChange={setIsTagSpinning}
+            onResult={(tagName) => changeCondition(setSelectedTags)([tagName])}
           />
         )}
       </section>

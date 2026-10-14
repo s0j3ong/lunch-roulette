@@ -59,3 +59,10 @@
     width: 100%;
   }
 }
+
+.tag-roulette-note {
+  display: block;
+  margin-top: 0.25rem;
+  color: var(--color-ink-muted);
+  font-size: 0.875rem;
+}
