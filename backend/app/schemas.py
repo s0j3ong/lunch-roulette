@@ -58,3 +58,9 @@ class RestaurantListItem(BaseModel):
     memo: str | None
     visited: bool
     rating: int | None
+
+
+class TagResponse(BaseModel):
+    id: int
+    name: str
+    is_default: bool
