@@ -8,7 +8,7 @@ async function request(path, options = {}) {
         ...options.headers,
       },
     })
-  } catch {
+  } catch (error) {
     if (options.signal?.aborted) throw error
     throw new Error('백엔드에 연결할 수 없어요. 서버가 실행 중인지 확인해 주세요.')
   }
@@ -38,6 +38,10 @@ export function getTags(signal) {
   return request('/api/tags', { signal })
 }
 
+export function getRestaurants(signal) {
+  return request('/api/restaurants', { signal })
+}
+
 export function getRestaurant(id, signal) {
   return request(`/api/restaurants/${id}`, { signal })
 }
@@ -54,4 +58,8 @@ export function updateRestaurant(id, restaurant) {
     method: 'PUT',
     body: JSON.stringify(restaurant),
   })
+}
+
+export function deleteRestaurant(id) {
+  return request(`/api/restaurants/${id}`, { method: 'DELETE' })
 }

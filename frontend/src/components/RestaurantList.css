@@ -1,0 +1,94 @@
+.restaurant-list {
+  display: grid;
+  gap: 0.75rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.restaurant-item {
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  background: var(--color-surface);
+}
+
+.restaurant-item-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.restaurant-item h3 {
+  margin: 0;
+  font-size: 1.1rem;
+  overflow-wrap: anywhere;
+}
+
+.visit-badge {
+  flex: 0 0 auto;
+  padding: 0.15rem 0.55rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  color: var(--color-ink-muted);
+  font-size: 0.85rem;
+}
+
+.visit-badge.visited {
+  border-color: var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-ink);
+}
+
+.restaurant-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin: 0.6rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.restaurant-tags li {
+  padding: 0.1rem 0.55rem;
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-ink);
+  font-size: 0.85rem;
+}
+
+.restaurant-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 0.75rem 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.95rem;
+}
+
+.restaurant-meta div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.restaurant-meta dt {
+  font-weight: 600;
+}
+
+.restaurant-meta dd {
+  margin: 0;
+  color: var(--color-ink);
+  overflow-wrap: anywhere;
+}
+
+.restaurant-memo {
+  flex-basis: 100%;
+}
+
+.restaurant-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 0.75rem;
+}

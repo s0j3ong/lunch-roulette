@@ -11,3 +11,57 @@ body {
   min-width: 320px;
   min-height: 100vh;
 }
+
+button {
+  font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid var(--color-primary-strong);
+  outline-offset: 2px;
+}
+
+.primary-button,
+.secondary-button,
+.danger-button,
+.danger-outline-button {
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  color: var(--color-ink);
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: var(--color-primary);
+}
+
+.secondary-button {
+  flex: 0 0 auto;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.danger-button {
+  border-color: var(--color-danger);
+  background: var(--color-danger);
+  color: var(--color-surface);
+}
+
+.danger-outline-button {
+  border-color: var(--color-danger);
+  background: var(--color-surface);
+  color: var(--color-danger);
+}
+
+.primary-button:hover:not(:disabled),
+.secondary-button:hover:not(:disabled) {
+  border-color: var(--color-primary-strong);
+}
+
+button:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}

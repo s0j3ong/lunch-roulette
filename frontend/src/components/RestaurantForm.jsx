@@ -16,7 +16,7 @@ const emptyForm = {
   rating: '',
 }
 
-function RestaurantForm({ restaurantId }) {
+function RestaurantForm({ restaurantId, onSaved, onCancel }) {
   const isEditing = restaurantId !== null
   const [form, setForm] = useState(emptyForm)
   const [tags, setTags] = useState([])
@@ -116,12 +116,13 @@ function RestaurantForm({ restaurantId }) {
 
     try {
       if (isEditing) {
-        await updateRestaurant(restaurantId, payload)
-        setNotice('식당 정보를 수정했어요.')
+        const saved = await updateRestaurant(restaurantId, payload)
+        onSaved(saved, `'${saved.name}' 정보를 수정했어요.`)
       } else {
-        await createRestaurant(payload)
+        const saved = await createRestaurant(payload)
         setForm(emptyForm)
         setNotice('식당을 저장했어요.')
+        onSaved(saved)
       }
     } catch (saveError) {
       setError(saveError.message || '저장하지 못했어요. 입력 내용을 확인해 주세요.')
@@ -237,9 +238,16 @@ function RestaurantForm({ restaurantId }) {
         {error && <p className="form-message error-message" role="alert">{error}</p>}
         {notice && <p className="form-message success-message" role="status">{notice}</p>}
 
-        <button className="primary-button" type="submit" disabled={isSaving}>
-          {isSaving ? '저장 중이에요.' : isEditing ? '수정하기' : '저장하기'}
-        </button>
+        <div className="form-actions">
+          <button className="primary-button" type="submit" disabled={isSaving}>
+            {isSaving ? '저장 중이에요.' : isEditing ? '수정하기' : '저장하기'}
+          </button>
+          {isEditing && (
+            <button className="secondary-button" type="button" onClick={onCancel}>
+              수정 취소하기
+            </button>
+          )}
+        </div>
       </form>
     </section>
   )

@@ -107,33 +107,6 @@
   gap: 0.5rem;
 }
 
-.primary-button,
-.secondary-button {
-  min-height: 2.75rem;
-  padding: 0.65rem 1rem;
-  border: 1px solid transparent;
-  border-radius: 0.55rem;
-  color: var(--color-ink);
-  font: inherit;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.primary-button {
-  background: var(--color-primary);
-}
-
-.secondary-button {
-  flex: 0 0 auto;
-  border-color: var(--color-border);
-  background: var(--color-surface);
-}
-
-.primary-button:disabled {
-  cursor: wait;
-  opacity: 0.65;
-}
-
 .form-message {
   margin: 0;
 }
@@ -146,11 +119,6 @@
   color: var(--color-primary-strong);
 }
 
-.restaurant-form :focus-visible {
-  outline: 3px solid var(--color-primary-strong);
-  outline-offset: 2px;
-}
-
 @media (max-width: 480px) {
   .restaurant-form-card {
     padding: 1rem;
@@ -160,4 +128,14 @@
     align-items: stretch;
     flex-direction: column;
   }
+}
+
+.form-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.form-actions .primary-button {
+  flex: 1 1 12rem;
 }
