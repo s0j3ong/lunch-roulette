@@ -6,6 +6,7 @@ import TagFilter from '../components/TagFilter'
 import VisitedFilter from '../components/VisitedFilter'
 import Wheel from '../components/Wheel'
 import { nextRotation } from '../components/wheelRotation'
+import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
 import './RoulettePage.css'
 
 function formatPrice(price) {
@@ -50,7 +51,10 @@ function RoulettePage() {
   const [restaurantCount, setRestaurantCount] = useState(null)
   const [noCandidates, setNoCandidates] = useState(false)
   const spinTimer = useRef(null)
-  const spinDuration = 4000
+  const reduceMotion = usePrefersReducedMotion()
+  // "동작 줄이기"를 켰으면 짧게 한 바퀴만 돌고 멈춘다.
+  const spinDuration = reduceMotion ? 600 : 4000
+  const spinTurns = reduceMotion ? 1 : 6
 
   useEffect(() => () => clearTimeout(spinTimer.current), [])
 
@@ -119,7 +123,7 @@ function RoulettePage() {
       const winnerIndex = response.wheel.findIndex((item) => item.id === response.winner.id)
       setWheel(response.wheel)
       setExcludeIds(nextExcludeIds)
-      setRotation((current) => nextRotation(current, winnerIndex, response.wheel.length))
+      setRotation((current) => nextRotation(current, winnerIndex, response.wheel.length, spinTurns))
       spinTimer.current = setTimeout(() => {
         setIsSpinning(false)
         setResult(response)

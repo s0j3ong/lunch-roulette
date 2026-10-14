@@ -89,7 +89,8 @@ function RestaurantsPage() {
   function startEdit(id) {
     setEditingId(id)
     setNotice('')
-    formRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    formRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
   }
 
   function handleSaved(saved, message) {
