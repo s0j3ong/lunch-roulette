@@ -1,0 +1,163 @@
+.restaurant-form-card {
+  padding: 1.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: 1rem;
+  background: var(--color-surface);
+}
+
+.restaurant-form-card h1 {
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1.75rem;
+}
+
+.form-description {
+  margin-top: 0.5rem;
+  color: var(--color-ink-muted);
+}
+
+.restaurant-form {
+  display: grid;
+  gap: 1.1rem;
+  margin-top: 1.5rem;
+}
+
+.form-field {
+  display: grid;
+  gap: 0.45rem;
+  font-weight: 600;
+}
+
+.required-label {
+  color: var(--color-ink-muted);
+  font-size: 0.8rem;
+  font-weight: 400;
+}
+
+.restaurant-form input:not([type='checkbox']),
+.restaurant-form textarea,
+.restaurant-form select {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 2.75rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  font: inherit;
+}
+
+.restaurant-form textarea {
+  resize: vertical;
+}
+
+.restaurant-form input[type='checkbox'] {
+  width: 1.1rem;
+  height: 1.1rem;
+  accent-color: var(--color-primary-strong);
+}
+
+.tag-field {
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.tag-field legend,
+.custom-tag-field > label {
+  margin-bottom: 0.55rem;
+  font-weight: 600;
+}
+
+.tag-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.55rem;
+}
+
+.tag-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.45rem 0.7rem;
+  border: 1px solid var(--color-border);
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-ink);
+}
+
+.custom-tag-field {
+  margin-top: 1rem;
+}
+
+.custom-tag-field > label {
+  display: block;
+}
+
+.custom-tag-controls {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.checkbox-field {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.primary-button,
+.secondary-button {
+  min-height: 2.75rem;
+  padding: 0.65rem 1rem;
+  border: 1px solid transparent;
+  border-radius: 0.55rem;
+  color: var(--color-ink);
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.primary-button {
+  background: var(--color-primary);
+}
+
+.secondary-button {
+  flex: 0 0 auto;
+  border-color: var(--color-border);
+  background: var(--color-surface);
+}
+
+.primary-button:disabled {
+  cursor: wait;
+  opacity: 0.65;
+}
+
+.form-message {
+  margin: 0;
+}
+
+.error-message {
+  color: var(--color-danger);
+}
+
+.success-message {
+  color: var(--color-primary-strong);
+}
+
+.restaurant-form :focus-visible {
+  outline: 3px solid var(--color-primary-strong);
+  outline-offset: 2px;
+}
+
+@media (max-width: 480px) {
+  .restaurant-form-card {
+    padding: 1rem;
+  }
+
+  .custom-tag-controls {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -1,40 +1,20 @@
-import { useEffect, useState } from 'react'
+import RestaurantForm from './components/RestaurantForm'
 import './App.css'
 
 function App() {
-  const [healthMessage, setHealthMessage] = useState('백엔드에 연결하고 있어요.')
-
-  useEffect(() => {
-    const controller = new AbortController()
-
-    async function checkBackend() {
-      try {
-        const response = await fetch('/api/health', { signal: controller.signal })
-
-        if (!response.ok) {
-          throw new Error(`Health request failed with status ${response.status}`)
-        }
-
-        const result = await response.json()
-        if (result.status !== 'ok') {
-          throw new Error('Unexpected health response')
-        }
-        setHealthMessage('백엔드 응답이 정상이에요.')
-      } catch {
-        if (!controller.signal.aborted) {
-          setHealthMessage('백엔드에 연결할 수 없어요. 백엔드 서버가 실행 중인지 확인해 주세요.')
-        }
-      }
-    }
-
-    checkBackend()
-    return () => controller.abort()
-  }, [])
+  const editId = new URLSearchParams(window.location.search).get('edit')
+  const restaurantId = editId && /^\d+$/.test(editId) ? Number(editId) : null
 
   return (
-    <main>
-      <h1>오늘 뭐 먹지?</h1>
-      <p aria-live="polite">{healthMessage}</p>
+    <main className="app-shell">
+      <header className="app-header">
+        <p className="app-name">오늘 뭐 먹지?</p>
+      </header>
+      {editId && restaurantId === null ? (
+        <p role="alert">수정할 식당 번호가 올바르지 않아요.</p>
+      ) : (
+        <RestaurantForm restaurantId={restaurantId} />
+      )}
     </main>
   )
 }

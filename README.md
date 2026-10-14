@@ -23,10 +23,10 @@ DB_NAME
 cd backend
 python3 -m venv .venv
 .venv/bin/python -m pip install -r requirements.txt
-.venv/bin/uvicorn app.main:app --reload
+.venv/bin/uvicorn app.main:app --reload --port 8001
 ```
 
-백엔드 주소는 <http://localhost:8000>이고, 테스트 응답은 <http://localhost:8000/api/health>에서 확인할 수 있어요. API 문서는 <http://localhost:8000/docs>에서 볼 수 있어요.
+백엔드 주소는 <http://localhost:8001>이고, 테스트 응답은 <http://localhost:8001/api/health>에서 확인할 수 있어요. API 문서는 <http://localhost:8001/docs>에서 볼 수 있어요.
 
 ## 프론트엔드 실행
 
@@ -38,4 +38,4 @@ corepack pnpm install
 corepack pnpm dev
 ```
 
-브라우저에서 <http://localhost:5173>을 열어요. 개발 서버는 `/api` 요청을 백엔드 `localhost:8000`으로 프록시해요.
+브라우저에서 <http://localhost:5173>을 열어요. 개발 서버는 `/api` 요청을 백엔드 `localhost:8001`으로 프록시해요.
