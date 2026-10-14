@@ -62,3 +62,60 @@
     padding: 1rem;
   }
 }
+
+.condition-fields {
+  min-width: 0;
+  padding: 0;
+  border: 0;
+}
+
+.condition-fields:disabled {
+  opacity: 0.6;
+}
+
+.roulette-result {
+  width: 100%;
+}
+
+.result-card {
+  padding: 1rem;
+  border: 2px solid var(--color-primary);
+  border-radius: 0.75rem;
+  background: var(--color-primary-soft);
+  color: var(--color-ink);
+}
+
+.result-card.confirmed {
+  border-color: var(--color-ink);
+  background: var(--color-primary);
+}
+
+.result-eyebrow {
+  margin: 0;
+  font-weight: 700;
+}
+
+.result-card h3 {
+  margin: 0.25rem 0;
+  font-size: 1.6rem;
+  overflow-wrap: anywhere;
+}
+
+.result-meta,
+.result-memo {
+  margin: 0.25rem 0 0;
+}
+
+.spin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.spin-hint {
+  margin: 0;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}

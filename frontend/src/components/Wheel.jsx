@@ -55,7 +55,8 @@ function Wheel({ labels, rotation, durationMs }) {
               )}
               {!isPlaceholder &&
                 (count === 1 ? (
-                  <text className="wheel-label" x="0" y="0" fontSize={16}>
+                  // 한 칸이면 180도 돌아 멈추므로, 멈췄을 때 포인터 아래에서 바로 읽히게 뒤집어 둔다.
+                  <text className="wheel-label" x="0" y="55" fontSize={16} transform="rotate(180 0 55)">
                     {shortLabel(labels[index])}
                   </text>
                 ) : (

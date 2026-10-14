@@ -8,6 +8,31 @@ import Wheel from '../components/Wheel'
 import { nextRotation } from '../components/wheelRotation'
 import './RoulettePage.css'
 
+function formatPrice(price) {
+  return price === null ? '가격 미정' : `${price.toLocaleString('ko-KR')}원`
+}
+
+function ResultCard({ result, isConfirmed }) {
+  const { winner } = result
+  return (
+    <article className={isConfirmed ? 'result-card confirmed' : 'result-card'}>
+      <p className="result-eyebrow">{isConfirmed ? '오늘은 여기서 먹어요!' : '오늘의 식당'}</p>
+      <h3>{winner.name}</h3>
+      <p className="result-meta">
+        {[
+          winner.tags.join(', ') || '종류 없음',
+          formatPrice(winner.price),
+          winner.visited ? '가본 곳' : '가고 싶은 곳',
+          winner.rating ? `★ ${winner.rating}점` : null,
+        ]
+          .filter(Boolean)
+          .join(' · ')}
+      </p>
+      {winner.memo && <p className="result-memo">{winner.memo}</p>}
+    </article>
+  )
+}
+
 function RoulettePage() {
   const [tags, setTags] = useState([])
   const [priceBounds, setPriceBounds] = useState(null)
@@ -19,6 +44,9 @@ function RoulettePage() {
   const [rotation, setRotation] = useState(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinError, setSpinError] = useState('')
+  const [excludeIds, setExcludeIds] = useState([])
+  const [result, setResult] = useState(null)
+  const [isConfirmed, setIsConfirmed] = useState(false)
   const spinTimer = useRef(null)
   const spinDuration = 4000
 
@@ -46,22 +74,43 @@ function RoulettePage() {
     return () => controller.abort()
   }, [])
 
-  async function spin() {
+  // 조건을 새로 고르면 이번 라운드의 제외 목록과 결과를 비운다.
+  function resetRound() {
+    setExcludeIds([])
+    setResult(null)
+    setIsConfirmed(false)
+    setSpinError('')
+  }
+
+  function changeCondition(setter) {
+    return (value) => {
+      setter(value)
+      resetRound()
+    }
+  }
+
+  async function spin(nextExcludeIds) {
     setIsSpinning(true)
     setSpinError('')
+    setResult(null)
+    setIsConfirmed(false)
     try {
-      const result = await recommendRestaurant({
+      const response = await recommendRestaurant({
         tags: selectedTags,
         price_min: priceRange?.[0] ?? null,
         price_max: priceRange?.[1] ?? null,
         visited,
-        exclude_ids: [],
+        exclude_ids: nextExcludeIds,
       })
       // 당첨은 서버가 정한다. 화면은 wheel에서 winner의 칸을 찾아 그 칸에서 멈춘다.
-      const winnerIndex = result.wheel.findIndex((item) => item.id === result.winner.id)
-      setWheel(result.wheel)
-      setRotation((current) => nextRotation(current, winnerIndex, result.wheel.length))
-      spinTimer.current = setTimeout(() => setIsSpinning(false), spinDuration)
+      const winnerIndex = response.wheel.findIndex((item) => item.id === response.winner.id)
+      setWheel(response.wheel)
+      setExcludeIds(nextExcludeIds)
+      setRotation((current) => nextRotation(current, winnerIndex, response.wheel.length))
+      spinTimer.current = setTimeout(() => {
+        setIsSpinning(false)
+        setResult(response)
+      }, spinDuration)
     } catch (error) {
       setSpinError(error.message || '룰렛을 돌리지 못했어요. 다시 시도해 주세요.')
       setIsSpinning(false)
@@ -74,19 +123,52 @@ function RoulettePage() {
         <h1 id="conditions-title">오늘의 조건</h1>
         <p className="section-description">조건을 고르지 않으면 저장한 모든 식당이 후보예요.</p>
         {optionsError && <p className="error-text" role="alert">{optionsError}</p>}
-        <div className="condition-fields">
-          <TagFilter tags={tags} selected={selectedTags} onChange={setSelectedTags} />
-          <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={setPriceRange} />
-          <VisitedFilter value={visited} onChange={setVisited} />
-        </div>
+        <fieldset className="condition-fields" disabled={isSpinning}>
+          <TagFilter tags={tags} selected={selectedTags} onChange={changeCondition(setSelectedTags)} />
+          <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={changeCondition(setPriceRange)} />
+          <VisitedFilter value={visited} onChange={changeCondition(setVisited)} />
+        </fieldset>
       </section>
 
       <section className="roulette-stage" aria-labelledby="wheel-title">
         <h2 id="wheel-title">식당 룰렛</h2>
         <Wheel labels={wheel.map((item) => item.name)} rotation={rotation} durationMs={spinDuration} />
-        <button className="primary-button spin-button" type="button" onClick={spin} disabled={isSpinning}>
-          {isSpinning ? '룰렛이 돌아가고 있어요' : '룰렛 돌리기'}
-        </button>
+
+        <div className="roulette-result" aria-live="polite">
+          {result && <ResultCard result={result} isConfirmed={isConfirmed} />}
+        </div>
+
+        <div className="spin-actions">
+          {result && !isConfirmed ? (
+            <>
+              <button
+                className="primary-button spin-button"
+                type="button"
+                onClick={() => spin([...excludeIds, result.winner.id])}
+              >
+                다시 돌리기
+              </button>
+              <button className="secondary-button" type="button" onClick={() => setIsConfirmed(true)}>
+                여기로 정하기
+              </button>
+            </>
+          ) : (
+            <button
+              className="primary-button spin-button"
+              type="button"
+              onClick={() => {
+                resetRound()
+                spin([])
+              }}
+              disabled={isSpinning}
+            >
+              {isSpinning ? '룰렛이 돌아가고 있어요' : result ? '처음부터 다시 돌리기' : '룰렛 돌리기'}
+            </button>
+          )}
+        </div>
+        {result && !isConfirmed && (
+          <p className="spin-hint">다시 돌리면 지금까지 나온 식당 {excludeIds.length + 1}곳을 빼고 돌려요.</p>
+        )}
         {spinError && <p className="error-text" role="alert">{spinError}</p>}
       </section>
     </div>
