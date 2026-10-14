@@ -32,7 +32,8 @@ PRD의 1차 버전을 여덟 단계(0~7단계)로 나누고, 단계가 끝날 �
   - 구현 내용: `backend/requirements.txt`에 FastAPI, Uvicorn, SQLAlchemy, PyMySQL을 선언하고 `backend/.venv`에 설치했다. 패키지 import와 SQLAlchemy의 PyMySQL 방언 사용 가능 여부, `pip check`를 확인했다. 가상환경은 `.gitignore` 규칙으로 Git 추적 대상에서 제외했다.
 - [x] T03 `backend`: 테스트 응답을 돌려주는 `GET /api/health` 작성, `.env`에서 DB 접속 정보 읽기
   - 구현 내용: `backend/app/main.py`에 FastAPI 앱과 `GET /api/health` 테스트 응답을 추가하고, 앱 시작 시 `backend/.env`를 읽는 설정을 불러오도록 연결했다. `backend/app/config.py`에서 필수 DB 설정을 검증하고 SQLAlchemy URL을 생성하며, 비밀번호를 출력하거나 API 응답에 포함하지 않는다. Uvicorn으로 서버를 띄워 `/api/health`가 `200 {"status":"ok"}`를 반환하는 것과 설정값 로딩, 의존성 상태를 확인했다. 브라우저 화면 연결은 프론트엔드 작업(T04) 이후 확인한다.
-- [ ] T04 `frontend`: Vite로 React 프로젝트 생성, `vite.config.js`에 `/api` 프록시 설정
+- [x] T04 `frontend`: Vite로 React 프로젝트 생성, `vite.config.js`에 `/api` 프록시 설정
+  - 구현 내용: `frontend`에 Vite·React 앱과 `/api`를 백엔드 `localhost:8000`으로 전달하는 개발 프록시를 구성했다. 첫 화면에서 `/api/health`를 호출해 백엔드 연결 상태를 표시한다. 개발 서버를 브라우저에서 열어 `백엔드 응답이 정상이에요.` 표시를 확인했고, 프로덕션 빌드와 lint도 통과했다.
 - [ ] T05 `frontend`: `src/styles/theme.css`에 PRD 6장의 색상 토큰 정의
 - [ ] T06 `.gitignore`(`.env` 포함)와 `README.md`(실행 방법) 작성
 
@@ -177,7 +178,7 @@ AI에게는 한 번에 한 단계씩만 요청하고, 완료 기준을 직접 �
 2. 다른 단계의 기능은 만들지 말라고 분명히 적는다.
 3. AI가 만든 코드를 실행해서 완료 기준을 직접 확인한다.
 4. 막히면 오류 메시지 전문과 어떤 동작을 했을 때 생겼는지를 함께 알려주고 수정을 요청한다.
-5. 완료 기준을 통과하면 이 문서의 체크박스를 갱신하고, 완료한 각 체크박스 바로 아래에 `구현 내용`으로 실제 구현 방식과 확인 결과를 기록한다. 미완료·미확인 사항은 완료한 것처럼 쓰지 않는다. 변경 사항을 Git에 커밋한 뒤 다음 단계로 넘어간다.
+5. 완료 기준을 통과하면 이 문서의 체크박스를 갱신하고, 완료한 각 체크박스 바로 아래에 `구현 내용`으로 실제 구현 방식과 확인 결과를 기록한다. 미완료·미확인 사항은 완료한 것처럼 쓰지 않는다. 변경 사항을 Git에 커밋한 뒤 다음 단계로 넘어간다. 커밋 제목은 체크박스 ID와 설명을 `T01 설명` 형식으로 작성하고 대괄호는 쓰지 않는다.
 
 요청 문장은 이런 형태로 쓴다.
 
