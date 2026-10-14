@@ -45,7 +45,8 @@ PRD의 1차 버전을 여덟 단계(0~7단계)로 나누고, 단계가 끝날 �
 
 PRD 기능: F1, F2, F4
 
-- [ ] T07 `backend/sql/schema.sql`: `restaurants`, `tags`, `restaurant_tags` 테이블 생성, 기본 태그 4개(한식·중식·일식·양식) 입력
+- [x] T07 `backend/sql/schema.sql`: `restaurants`, `tags`, `restaurant_tags` 테이블 생성, 기본 태그 4개(한식·중식·일식·양식) 입력
+  - 구현 내용: `backend/sql/schema.sql`에 PRD 컬럼과 사용자별 조회 인덱스를 포함한 세 테이블, 연결 테이블 외래 키와 삭제 연쇄, 기본 음식 종류 태그 네 개를 정의했다. SQL 구조와 인덱스·태그 항목을 정적으로 검토했으며, 기존 DB에 테이블을 생성하거나 SQL을 실행하지는 않았다.
 - [ ] T08 식당 CRUD API(`/api/restaurants`), 등록·수정 시 태그 여러 개와 가격을 함께 받기(없는 태그는 새로 만들기)
 - [ ] T09 태그 목록 API(`GET /api/tags`)
 
