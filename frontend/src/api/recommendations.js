@@ -6,3 +6,10 @@ export function recommendRestaurant(conditions) {
     body: JSON.stringify(conditions),
   })
 }
+
+export function recommendTag(conditions) {
+  return request('/api/recommendations/tag', {
+    method: 'POST',
+    body: JSON.stringify(conditions),
+  })
+}

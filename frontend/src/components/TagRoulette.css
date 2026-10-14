@@ -1,0 +1,61 @@
+.tag-roulette {
+  margin-top: 1.5rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid var(--color-border);
+}
+
+.tag-roulette h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+.tag-roulette-description {
+  margin: 0.35rem 0 0;
+  color: var(--color-ink-muted);
+  font-size: 0.95rem;
+}
+
+.tag-roulette-body {
+  display: grid;
+  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
+  align-items: center;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.tag-roulette-wheel .wheel {
+  width: 100%;
+}
+
+.tag-roulette-side {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.tag-roulette-result {
+  margin: 0;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.5rem;
+  background: var(--color-primary-soft);
+  color: var(--color-ink);
+  font-size: 1.05rem;
+}
+
+.tag-spin-button {
+  width: 100%;
+}
+
+@media (max-width: 480px) {
+  .tag-roulette-body {
+    grid-template-columns: 1fr;
+    justify-items: center;
+  }
+
+  .tag-roulette-wheel {
+    width: min(100%, 14rem);
+  }
+
+  .tag-roulette-side {
+    width: 100%;
+  }
+}

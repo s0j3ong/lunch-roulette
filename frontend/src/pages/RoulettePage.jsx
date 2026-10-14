@@ -1,12 +1,12 @@
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { recommendRestaurant } from '../api/recommendations'
 import { getPriceRange, getRestaurants, getTags } from '../api/restaurants'
 import PriceRangeFilter from '../components/PriceRangeFilter'
 import TagFilter from '../components/TagFilter'
 import VisitedFilter from '../components/VisitedFilter'
 import Wheel from '../components/Wheel'
-import { nextRotation } from '../components/wheelRotation'
-import { usePrefersReducedMotion } from '../hooks/usePrefersReducedMotion'
+import TagRoulette from '../components/TagRoulette'
+import { useWheelSpin } from '../hooks/useWheelSpin'
 import './RoulettePage.css'
 
 function formatPrice(price) {
@@ -42,7 +42,6 @@ function RoulettePage() {
   const [priceRange, setPriceRange] = useState(null)
   const [visited, setVisited] = useState(null)
   const [wheel, setWheel] = useState([])
-  const [rotation, setRotation] = useState(0)
   const [isSpinning, setIsSpinning] = useState(false)
   const [spinError, setSpinError] = useState('')
   const [excludeIds, setExcludeIds] = useState([])
@@ -50,13 +49,8 @@ function RoulettePage() {
   const [isConfirmed, setIsConfirmed] = useState(false)
   const [restaurantCount, setRestaurantCount] = useState(null)
   const [noCandidates, setNoCandidates] = useState(false)
-  const spinTimer = useRef(null)
-  const reduceMotion = usePrefersReducedMotion()
-  // "동작 줄이기"를 켰으면 짧게 한 바퀴만 돌고 멈춘다.
-  const spinDuration = reduceMotion ? 600 : 4000
-  const spinTurns = reduceMotion ? 1 : 6
-
-  useEffect(() => () => clearTimeout(spinTimer.current), [])
+  const [isTagSpinning, setIsTagSpinning] = useState(false)
+  const { rotation, durationMs: spinDuration, spinTo } = useWheelSpin()
 
   useEffect(() => {
     const controller = new AbortController()
@@ -123,11 +117,9 @@ function RoulettePage() {
       const winnerIndex = response.wheel.findIndex((item) => item.id === response.winner.id)
       setWheel(response.wheel)
       setExcludeIds(nextExcludeIds)
-      setRotation((current) => nextRotation(current, winnerIndex, response.wheel.length, spinTurns))
-      spinTimer.current = setTimeout(() => {
-        setIsSpinning(false)
-        setResult(response)
-      }, spinDuration)
+      await spinTo(winnerIndex, response.wheel.length)
+      setIsSpinning(false)
+      setResult(response)
     } catch (error) {
       if (error.code === 'NO_CANDIDATES') {
         setNoCandidates(true)
@@ -144,11 +136,19 @@ function RoulettePage() {
         <h1 id="conditions-title">오늘의 조건</h1>
         <p className="section-description">조건을 고르지 않으면 저장한 모든 식당이 후보예요.</p>
         {optionsError && <p className="error-text" role="alert">{optionsError}</p>}
-        <fieldset className="condition-fields" disabled={isSpinning}>
+        <fieldset className="condition-fields" disabled={isSpinning || isTagSpinning}>
           <TagFilter tags={tags} selected={selectedTags} onChange={changeCondition(setSelectedTags)} />
           <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={changeCondition(setPriceRange)} />
           <VisitedFilter value={visited} onChange={changeCondition(setVisited)} />
         </fieldset>
+        {restaurantCount !== 0 && (
+          <TagRoulette
+            priceRange={priceRange}
+            visited={visited}
+            disabled={isSpinning}
+            onSpinningChange={setIsTagSpinning}
+          />
+        )}
       </section>
 
       <section className="roulette-stage" aria-labelledby="wheel-title">
@@ -185,6 +185,7 @@ function RoulettePage() {
                     className="primary-button spin-button"
                     type="button"
                     onClick={() => spin([...excludeIds, result.winner.id])}
+                    disabled={isTagSpinning}
                   >
                     다시 돌리기
                   </button>
@@ -201,7 +202,7 @@ function RoulettePage() {
                       resetRound()
                       spin([])
                     }}
-                    disabled={isSpinning || noCandidates}
+                    disabled={isSpinning || isTagSpinning || noCandidates}
                   >
                     {isSpinning ? '룰렛이 돌아가고 있어요' : result ? '처음부터 다시 돌리기' : '룰렛 돌리기'}
                   </button>
