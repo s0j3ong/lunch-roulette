@@ -136,11 +136,14 @@ function RoulettePage() {
         <h1 id="conditions-title">오늘의 조건</h1>
         <p className="section-description">조건을 고르지 않으면 저장한 모든 식당이 후보예요.</p>
         {optionsError && <p className="error-text" role="alert">{optionsError}</p>}
-        <fieldset className="condition-fields" disabled={isSpinning || isTagSpinning}>
-          <TagFilter tags={tags} selected={selectedTags} onChange={changeCondition(setSelectedTags)} />
-          <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={changeCondition(setPriceRange)} />
-          <VisitedFilter value={visited} onChange={changeCondition(setVisited)} />
-        </fieldset>
+        {!priceBounds && !optionsError && <p role="status">조건을 불러오고 있어요.</p>}
+        {priceBounds && (
+          <fieldset className="condition-fields" disabled={isSpinning || isTagSpinning}>
+            <TagFilter tags={tags} selected={selectedTags} onChange={changeCondition(setSelectedTags)} />
+            <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={changeCondition(setPriceRange)} />
+            <VisitedFilter value={visited} onChange={changeCondition(setVisited)} />
+          </fieldset>
+        )}
         {restaurantCount !== 0 && (
           <TagRoulette
             priceRange={priceRange}

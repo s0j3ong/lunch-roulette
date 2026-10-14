@@ -135,6 +135,23 @@ function RestaurantForm({ restaurantId, onSaved, onCancel }) {
     return <p role="status">식당 정보를 불러오고 있어요.</p>
   }
 
+  // 수정할 식당을 못 불러왔으면 빈 폼 대신 안내와 돌아가기 버튼만 보여준다.
+  if (isEditing && error && !form.name) {
+    return (
+      <section className="restaurant-form-card">
+        <h1>식당 수정</h1>
+        <p className="form-message error-message" role="alert">
+          {error} 목록을 새로 불러온 뒤 다시 골라 주세요.
+        </p>
+        <div className="form-actions">
+          <button className="secondary-button" type="button" onClick={onCancel}>
+            수정 취소하기
+          </button>
+        </div>
+      </section>
+    )
+  }
+
   return (
     <section className="restaurant-form-card">
       <h1>{isEditing ? '식당 수정' : '식당 등록'}</h1>

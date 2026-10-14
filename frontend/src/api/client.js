@@ -14,20 +14,25 @@ export async function request(path, options = {}) {
   }
 
   if (!response.ok) {
-    let message = `요청을 처리하지 못했어요. (${response.status})`
+    const fallback =
+      response.status >= 500
+        ? `서버에서 문제가 생겼어요. 잠시 후 다시 시도해 주세요. (${response.status})`
+        : `요청을 처리하지 못했어요. 입력 내용을 확인해 주세요. (${response.status})`
+    let message = fallback
     let code = null
     try {
       const body = await response.json()
       if (typeof body.detail === 'string') {
         message = body.detail
       } else if (Array.isArray(body.detail)) {
-        message = body.detail.map((error) => error.msg).join(', ')
+        // Pydantic 검증 메시지의 "Value error, " 접두어는 떼고 보여준다.
+        message = body.detail.map((error) => error.msg.replace(/^Value error, /, '')).join(', ')
       } else if (body.detail?.message) {
         message = body.detail.message
         code = body.detail.code ?? null
       }
     } catch {
-      message = `요청을 처리하지 못했어요. (${response.status})`
+      message = fallback
     }
     const error = new Error(message)
     error.code = code

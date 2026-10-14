@@ -137,10 +137,13 @@ function RestaurantsPage() {
           {!isLoading && !loadError && <span className="count-label">{restaurants.length}곳</span>}
         </div>
 
-        <div className="list-filters">
-          <TagFilter tags={tags} selected={selectedTags} onChange={setSelectedTags} />
-          <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={setPriceRange} />
-        </div>
+        {/* 필터 선택지를 불러온 뒤에만 보여준다. 연결 실패 시 잘못된 빈 안내가 나오지 않게 한다. */}
+        {priceBounds && (
+          <div className="list-filters">
+            <TagFilter tags={tags} selected={selectedTags} onChange={setSelectedTags} />
+            <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={setPriceRange} />
+          </div>
+        )}
 
         {notice && <p className="page-notice" role="status">{notice}</p>}
 
