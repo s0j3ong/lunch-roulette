@@ -142,7 +142,9 @@ function RestaurantForm({ restaurantId, onSaved, onCancel }) {
 
       <form className="restaurant-form" onSubmit={submitForm}>
         <label className="form-field" htmlFor="restaurant-name">
-          식당 이름 <span className="required-label">필수</span>
+          <span>
+            식당 이름 <span className="required-label">필수</span>
+          </span>
           <input
             id="restaurant-name"
             name="name"

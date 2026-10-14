@@ -3,12 +3,16 @@ import './App.css'
 
 function App() {
   return (
-    <main className="app-shell">
+    <>
       <header className="app-header">
-        <p className="app-name">오늘 뭐 먹지?</p>
+        <div className="app-header-inner">
+          <p className="app-name">오늘 뭐 먹지?</p>
+        </div>
       </header>
-      <RestaurantsPage />
-    </main>
+      <main className="app-shell">
+        <RestaurantsPage />
+      </main>
+    </>
   )
 }
 

@@ -2,12 +2,14 @@
   font-family: system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
+  line-height: 1.5;
   color: var(--color-ink);
   background: var(--color-bg);
 }
 
 body {
   margin: 0;
+  background: var(--color-bg);
   min-width: 320px;
   min-height: 100vh;
 }
@@ -64,4 +66,8 @@ button {
 button:disabled {
   cursor: not-allowed;
   opacity: 0.6;
+}
+
+a {
+  color: var(--color-primary-strong);
 }

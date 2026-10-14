@@ -1,15 +1,31 @@
+.app-header {
+  border-bottom: 1px solid var(--color-border);
+  background: var(--color-primary);
+  color: var(--color-ink);
+}
+
+.app-header-inner,
 .app-shell {
   width: min(100% - 2rem, 72rem);
   margin: 0 auto;
-  padding: 1.25rem 0 3rem;
 }
 
-.app-header {
-  margin-bottom: 1rem;
+.app-header-inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  padding: 0.85rem 0;
 }
 
 .app-name {
-  color: var(--color-primary-strong);
-  font-size: 1.1rem;
-  font-weight: 700;
+  margin: 0;
+  color: var(--color-ink);
+  font-size: 1.3rem;
+  font-weight: 800;
+}
+
+.app-shell {
+  padding: 1.5rem 0 3rem;
 }
