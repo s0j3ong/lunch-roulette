@@ -34,7 +34,8 @@ PRD의 1차 버전을 여덟 단계(0~7단계)로 나누고, 단계가 끝날 �
   - 구현 내용: `backend/app/main.py`에 FastAPI 앱과 `GET /api/health` 테스트 응답을 추가하고, 앱 시작 시 `backend/.env`를 읽는 설정을 불러오도록 연결했다. `backend/app/config.py`에서 필수 DB 설정을 검증하고 SQLAlchemy URL을 생성하며, 비밀번호를 출력하거나 API 응답에 포함하지 않는다. Uvicorn으로 서버를 띄워 `/api/health`가 `200 {"status":"ok"}`를 반환하는 것과 설정값 로딩, 의존성 상태를 확인했다. 브라우저 화면 연결은 프론트엔드 작업(T04) 이후 확인한다.
 - [x] T04 `frontend`: Vite로 React 프로젝트 생성, `vite.config.js`에 `/api` 프록시 설정
   - 구현 내용: `frontend`에 Vite·React 앱과 `/api`를 백엔드 `localhost:8000`으로 전달하는 개발 프록시를 구성했다. 첫 화면에서 `/api/health`를 호출해 백엔드 연결 상태를 표시한다. 개발 서버를 브라우저에서 열어 `백엔드 응답이 정상이에요.` 표시를 확인했고, 프로덕션 빌드와 lint도 통과했다.
-- [ ] T05 `frontend`: `src/styles/theme.css`에 PRD 6장의 색상 토큰 정의
+- [x] T05 `frontend`: `src/styles/theme.css`에 PRD 6장의 색상 토큰 정의
+  - 구현 내용: `frontend/src/styles/theme.css`에 PRD 6장의 기본 색상 토큰 9개와 룰렛 색상 토큰 8개를 정의하고 앱 진입점에서 불러오도록 연결했다. 전역 바탕·글자색에 테마 토큰을 적용했다. 프론트엔드 빌드와 lint를 통과했고, `src`의 색상 코드는 토큰 파일에만 있는 것을 확인했다.
 - [ ] T06 `.gitignore`(`.env` 포함)와 `README.md`(실행 방법) 작성
 
 완료 기준: 화면에서 백엔드의 테스트 응답이 보인다.
