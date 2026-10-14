@@ -1,0 +1,50 @@
+.wheel {
+  position: relative;
+  width: min(100%, 22rem);
+  margin: 0 auto;
+  padding-top: 1.1rem;
+}
+
+.wheel-disc {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 50%;
+  box-shadow: 0 0 0 4px var(--color-ink);
+  transition-property: transform;
+  transition-timing-function: cubic-bezier(0.12, 0.7, 0.18, 1);
+}
+
+.wheel-slice {
+  stroke: var(--color-surface);
+  stroke-width: 1.5;
+}
+
+.wheel-label {
+  fill: var(--color-ink);
+  font-weight: 700;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.wheel-hub {
+  fill: var(--color-surface);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+}
+
+.wheel-pointer {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  z-index: 1;
+  width: 2.5rem;
+  transform: translateX(-50%);
+}
+
+.wheel-pointer path {
+  fill: var(--color-primary);
+  stroke: var(--color-ink);
+  stroke-width: 3;
+  stroke-linejoin: round;
+}

@@ -3,11 +3,30 @@
   gap: 1.5rem;
 }
 
-.roulette-conditions {
+.roulette-conditions,
+.roulette-stage {
   padding: 1.5rem;
   border: 1px solid var(--color-border);
   border-radius: 1rem;
   background: var(--color-surface);
+}
+
+.roulette-stage {
+  display: grid;
+  justify-items: center;
+  gap: 1rem;
+  text-align: center;
+}
+
+.roulette-stage h2 {
+  justify-self: start;
+  margin: 0;
+  font-size: 1.35rem;
+}
+
+.spin-button {
+  width: min(100%, 22rem);
+  font-size: 1.1rem;
 }
 
 .roulette-conditions h1 {
@@ -30,8 +49,16 @@
   color: var(--color-danger);
 }
 
+@media (min-width: 960px) {
+  .roulette-page {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+    align-items: start;
+  }
+}
+
 @media (max-width: 480px) {
-  .roulette-conditions {
+  .roulette-conditions,
+  .roulette-stage {
     padding: 1rem;
   }
 }
