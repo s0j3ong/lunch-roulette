@@ -1,3 +1,5 @@
+export const AUTH_REQUIRED_EVENT = 'auth:required'
+
 export async function request(path, options = {}) {
   let response
   try {
@@ -11,6 +13,11 @@ export async function request(path, options = {}) {
   } catch (error) {
     if (options.signal?.aborted) throw error
     throw new Error('백엔드에 연결할 수 없어요. 서버가 실행 중인지 확인해 주세요.')
+  }
+
+  // 로그인이 풀렸으면 앱이 로그인 화면으로 돌아가도록 알린다.
+  if (response.status === 401 && !path.startsWith('/api/auth/')) {
+    window.dispatchEvent(new Event(AUTH_REQUIRED_EVENT))
   }
 
   if (!response.ok) {
@@ -36,6 +43,7 @@ export async function request(path, options = {}) {
     }
     const error = new Error(message)
     error.code = code
+    error.status = response.status
     throw error
   }
 

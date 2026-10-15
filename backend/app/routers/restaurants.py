@@ -4,8 +4,9 @@ from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config import CURRENT_USER_ID, DEFAULT_TAG_NAMES
+from app.config import DEFAULT_TAG_NAMES
 from app.database import get_db
+from app.dependencies import get_current_user_id
 from app.models import Restaurant, Tag
 from app.schemas import PriceBand, RestaurantCreate, RestaurantListItem, RestaurantResponse, RestaurantUpdate
 from app.services.filters import apply_restaurant_filters
@@ -14,7 +15,7 @@ from app.services.filters import apply_restaurant_filters
 router = APIRouter(prefix="/api/restaurants", tags=["restaurants"])
 
 
-def _get_tags(session: Session, names: list[str]) -> list[Tag]:
+def _get_tags(session: Session, user_id: int, names: list[str]) -> list[Tag]:
     unique_names = list(dict.fromkeys(name.strip() for name in names))
     if any(not name for name in unique_names):
         raise HTTPException(status_code=422, detail="태그 이름은 비워둘 수 없어요.")
@@ -22,11 +23,11 @@ def _get_tags(session: Session, names: list[str]) -> list[Tag]:
     tags = []
     for name in unique_names:
         tag = session.scalar(
-            select(Tag).where(Tag.user_id == CURRENT_USER_ID, Tag.name == name)
+            select(Tag).where(Tag.user_id == user_id, Tag.name == name)
         )
         if tag is None:
             tag = Tag(
-                user_id=CURRENT_USER_ID,
+                user_id=user_id,
                 name=name,
                 is_default=name in DEFAULT_TAG_NAMES,
             )
@@ -36,13 +37,13 @@ def _get_tags(session: Session, names: list[str]) -> list[Tag]:
     return tags
 
 
-def _get_restaurant(session: Session, restaurant_id: int) -> Restaurant:
+def _get_restaurant(session: Session, user_id: int, restaurant_id: int) -> Restaurant:
     restaurant = session.scalar(
         select(Restaurant)
-        .options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID)))
+        .options(selectinload(Restaurant.tags.and_(Tag.user_id == user_id)))
         .where(
             Restaurant.id == restaurant_id,
-            Restaurant.user_id == CURRENT_USER_ID,
+            Restaurant.user_id == user_id,
         )
     )
     if restaurant is None:
@@ -71,10 +72,12 @@ def list_restaurants(
     price_band: list[PriceBand] = Query(default=[], description="가격대. 여러 개면 하나라도 해당하는 식당"),
     visited: bool | None = None,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> list[RestaurantListItem]:
     statement = apply_restaurant_filters(
-        select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID))),
+        select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == user_id))),
         tags=[name.strip() for name in tag if name.strip()],
+        user_id=user_id,
         price_bands=price_band,
         visited=visited,
     )
@@ -98,12 +101,13 @@ def list_restaurants(
 def create_restaurant(
     payload: RestaurantCreate,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> RestaurantResponse:
     now = datetime.now()
     restaurant = Restaurant(
-        user_id=CURRENT_USER_ID,
+        user_id=user_id,
         name=payload.name,
-        tags=_get_tags(session, payload.tags),
+        tags=_get_tags(session, user_id, payload.tags),
         price=payload.price,
         location=payload.location,
         memo=payload.memo,
@@ -122,8 +126,9 @@ def create_restaurant(
 def get_restaurant(
     restaurant_id: int,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> RestaurantResponse:
-    return _response(_get_restaurant(session, restaurant_id))
+    return _response(_get_restaurant(session, user_id, restaurant_id))
 
 
 @router.put("/{restaurant_id}", response_model=RestaurantResponse)
@@ -131,10 +136,11 @@ def update_restaurant(
     restaurant_id: int,
     payload: RestaurantUpdate,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> RestaurantResponse:
-    restaurant = _get_restaurant(session, restaurant_id)
+    restaurant = _get_restaurant(session, user_id, restaurant_id)
     restaurant.name = payload.name
-    restaurant.tags = _get_tags(session, payload.tags)
+    restaurant.tags = _get_tags(session, user_id, payload.tags)
     restaurant.price = payload.price
     restaurant.location = payload.location
     restaurant.memo = payload.memo
@@ -150,8 +156,9 @@ def update_restaurant(
 def delete_restaurant(
     restaurant_id: int,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> Response:
-    restaurant = _get_restaurant(session, restaurant_id)
+    restaurant = _get_restaurant(session, user_id, restaurant_id)
     session.delete(restaurant)
     session.commit()
     return Response(status_code=status.HTTP_204_NO_CONTENT)

@@ -1,3 +1,4 @@
+import re
 from datetime import datetime
 from typing import Literal
 
@@ -99,3 +100,38 @@ class RecommendationResponse(BaseModel):
 class TagRecommendationResponse(BaseModel):
     winner_tag: TagResponse
     wheel: list[TagResponse]
+
+
+class SignupRequest(BaseModel):
+    username: str = Field(description="영문 소문자·숫자·_ 4~20자")
+    password: str = Field(description="8~128자")
+
+    @field_validator("username")
+    @classmethod
+    def check_username(cls, value: str) -> str:
+        username = value.strip().lower()
+        if not re.fullmatch(r"[a-z0-9_]{4,20}", username):
+            raise ValueError("아이디는 영문, 숫자, _로 4~20자여야 해요.")
+        return username
+
+    @field_validator("password")
+    @classmethod
+    def check_password(cls, value: str) -> str:
+        if not 8 <= len(value) <= 128:
+            raise ValueError("비밀번호는 8자 이상 128자 이하여야 해요.")
+        return value
+
+
+class LoginRequest(BaseModel):
+    username: str = Field(max_length=20)
+    password: str = Field(max_length=128)
+
+    @field_validator("username", mode="before")
+    @classmethod
+    def normalize_username(cls, value: str) -> str:
+        return value.strip().lower() if isinstance(value, str) else value
+
+
+class UserResponse(BaseModel):
+    id: int
+    username: str

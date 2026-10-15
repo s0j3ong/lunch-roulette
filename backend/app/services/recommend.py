@@ -3,7 +3,6 @@ import random
 from sqlalchemy import select
 from sqlalchemy.orm import Session, selectinload
 
-from app.config import CURRENT_USER_ID
 from app.models import Restaurant, Tag
 from app.schemas import (
     RecommendationRequest,
@@ -43,9 +42,12 @@ def _build_wheel(winner, candidates: list, key) -> list:
     return wheel
 
 
-def recommend_restaurant(session: Session, request: RecommendationRequest) -> RecommendationResponse:
+def recommend_restaurant(
+    session: Session, user_id: int, request: RecommendationRequest
+) -> RecommendationResponse:
     statement = apply_restaurant_filters(
-        select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID))),
+        select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == user_id))),
+        user_id=user_id,
         tags=request.tags,
         price_bands=request.price_bands,
         visited=request.visited,
@@ -67,9 +69,9 @@ def recommend_restaurant(session: Session, request: RecommendationRequest) -> Re
     )
 
 
-def recommend_tag(session: Session) -> TagRecommendationResponse:
+def recommend_tag(session: Session, user_id: int) -> TagRecommendationResponse:
     # 저장된 음식 종류 전체가 후보다. 8개보다 많으면 칸에는 무작위 8개만 올라간다.
-    candidates = list(session.scalars(select(Tag).where(Tag.user_id == CURRENT_USER_ID)).all())
+    candidates = list(session.scalars(select(Tag).where(Tag.user_id == user_id)).all())
     if not candidates:
         raise NoCandidatesError
 

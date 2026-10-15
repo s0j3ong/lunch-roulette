@@ -18,6 +18,27 @@ restaurant_tags = Table(
 )
 
 
+class User(Base):
+    __tablename__ = "users"
+
+    id: Mapped[int] = mapped_column(INTEGER(unsigned=False), primary_key=True, autoincrement=True)
+    username: Mapped[str] = mapped_column(String(20), nullable=False, unique=True)
+    password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
+class UserSession(Base):
+    __tablename__ = "sessions"
+
+    # 쿠키에는 원래 토큰을, DB에는 SHA-256 해시만 둔다.
+    token_hash: Mapped[str] = mapped_column(String(64), primary_key=True)
+    user_id: Mapped[int] = mapped_column(
+        INTEGER(unsigned=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    expires_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+    created_at: Mapped[datetime] = mapped_column(DateTime, nullable=False)
+
+
 class Restaurant(Base):
     __tablename__ = "restaurants"
     __table_args__ = (
@@ -26,7 +47,9 @@ class Restaurant(Base):
     )
 
     id: Mapped[int] = mapped_column(INTEGER(unsigned=False), primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(INTEGER(unsigned=False), nullable=False, default=1)
+    user_id: Mapped[int] = mapped_column(
+        INTEGER(unsigned=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     price: Mapped[int | None] = mapped_column(INTEGER(unsigned=False), nullable=True)
     location: Mapped[str | None] = mapped_column(String(255), nullable=True)
@@ -44,7 +67,9 @@ class Tag(Base):
     __table_args__ = (Index("uq_tags_user_name", "user_id", "name", unique=True),)
 
     id: Mapped[int] = mapped_column(INTEGER(unsigned=False), primary_key=True, autoincrement=True)
-    user_id: Mapped[int] = mapped_column(INTEGER(unsigned=False), nullable=False, default=1)
+    user_id: Mapped[int] = mapped_column(
+        INTEGER(unsigned=False), ForeignKey("users.id", ondelete="CASCADE"), nullable=False
+    )
     name: Mapped[str] = mapped_column(String(100), nullable=False)
     is_default: Mapped[bool] = mapped_column(Boolean, nullable=False, default=False)
 

@@ -1,6 +1,27 @@
+CREATE TABLE users (
+    id INT NOT NULL AUTO_INCREMENT,
+    username VARCHAR(20) NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (id),
+    UNIQUE KEY uq_users_username (username)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+CREATE TABLE sessions (
+    token_hash CHAR(64) NOT NULL,
+    user_id INT NOT NULL,
+    expires_at DATETIME NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (token_hash),
+    INDEX ix_sessions_user_id (user_id),
+    CONSTRAINT fk_sessions_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 CREATE TABLE restaurants (
     id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL DEFAULT 1,
+    user_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
     price INT NULL,
     location VARCHAR(255) NULL,
@@ -11,16 +32,22 @@ CREATE TABLE restaurants (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (id),
     INDEX ix_restaurants_user_visited (user_id, visited),
-    INDEX ix_restaurants_user_price (user_id, price)
+    INDEX ix_restaurants_user_price (user_id, price),
+    CONSTRAINT fk_restaurants_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE tags (
     id INT NOT NULL AUTO_INCREMENT,
-    user_id INT NOT NULL DEFAULT 1,
+    user_id INT NOT NULL,
     name VARCHAR(100) NOT NULL,
     is_default BOOLEAN NOT NULL DEFAULT FALSE,
     PRIMARY KEY (id),
-    UNIQUE KEY uq_tags_user_name (user_id, name)
+    UNIQUE KEY uq_tags_user_name (user_id, name),
+    CONSTRAINT fk_tags_user
+        FOREIGN KEY (user_id) REFERENCES users (id)
+        ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE restaurant_tags (
@@ -36,12 +63,4 @@ CREATE TABLE restaurant_tags (
         ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-INSERT INTO tags (user_id, name, is_default)
-VALUES
-    (1, '한식', TRUE),
-    (1, '중식', TRUE),
-    (1, '일식', TRUE),
-    (1, '양식', TRUE),
-    (1, '분식', TRUE),
-    (1, '카페', TRUE),
-    (1, '술집', TRUE);
+-- 기본 음식 종류(한식·중식·일식·양식·분식·카페·술집)는 회원가입할 때 사용자별로 만든다.

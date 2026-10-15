@@ -8,7 +8,9 @@ from sqlalchemy import URL
 ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(ENV_FILE)
 
-CURRENT_USER_ID = 1
+# 로그인 세션 쿠키 이름과 유지 기간
+SESSION_COOKIE_NAME = "lunch_session"
+SESSION_DAYS = 30
 DEFAULT_TAG_NAMES = ("한식", "중식", "일식", "양식", "분식", "카페", "술집")
 
 

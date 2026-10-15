@@ -33,9 +33,14 @@ DB_NAME
 
 ### 테이블 만들기 (처음 한 번)
 
-`backend/sql/schema.sql`을 서비스 데이터베이스에서 실행해요. 식당·태그·연결 테이블 세 개를 만들고 기본 태그 일곱 개(한식·중식·일식·양식·분식·카페·술집)를 넣어요.
+`backend/sql/schema.sql`을 서비스 데이터베이스에서 실행해요. 사용자·세션·식당·태그·연결 테이블 다섯 개를 만들어요. 기본 음식 종류 일곱 개(한식·중식·일식·양식·분식·카페·술집)는 회원가입할 때 사용자마다 만들어져요.
 
-이미 예전 `schema.sql`로 테이블을 만든 DB라면 `backend/sql/migrations/001_location_memo_default_tags.sql`을 한 번 실행해요. `memo`를 `location`(위치)으로 바꾸고 100자 `memo` 컬럼과 기본 태그 분식·카페·술집을 더해요.
+이미 예전 `schema.sql`로 테이블을 만든 DB라면 `backend/sql/migrations/`의 파일을 아직 적용하지 않은 것부터 번호 순서대로 한 번씩 실행해요.
+
+| 파일 | 내용 |
+| --- | --- |
+| `001_location_memo_default_tags.sql` | `memo`를 `location`(위치)으로 바꾸고 100자 `memo` 컬럼과 기본 태그 분식·카페·술집을 더해요 |
+| `002_users_sessions.sql` | `users`·`sessions` 테이블을 만들고 식당·태그를 사용자에 연결해요. **로그인 이전에 저장한 식당과 태그는 모두 지워져요** |
 
 ```bash
 mariadb -u lunch -p lunch_box < backend/sql/schema.sql
@@ -86,6 +91,8 @@ cd ../backend && .venv/bin/uvicorn app.main:app --port 8001
 
 ## 4. 사용 방법
 
+처음 열면 로그인 화면이 나와요. **회원가입하기**로 아이디(영문·숫자·_ 4~20자)와 비밀번호(8자 이상)를 정하면 바로 로그인돼요. 로그인은 30일 동안 유지되고, 오른쪽 위 **로그아웃**으로 끝낼 수 있어요. 식당과 음식 종류는 사용자마다 따로 저장돼요.
+
 1. 상단의 **식당 관리**에서 **+ 식당 추가**를 눌러 식당을 등록해요. 이름은 필수이고, 음식 종류는 여러 개 고르거나 **+ 추가**로 직접 입력할 수 있어요.
 2. 위쪽 필터의 음식 종류와 가격대로 식당을 걸러 볼 수 있어요. 카드를 누르면 메모 전문을 보고 수정·삭제할 수 있어요.
 3. 상단의 **룰렛**에서 조건을 골라요. 조건을 고르지 않으면 저장한 모든 식당이 후보예요.
@@ -98,6 +105,10 @@ cd ../backend && .venv/bin/uvicorn app.main:app --port 8001
 
 | 메서드 | 경로 | 설명 |
 | --- | --- | --- |
+| POST | `/api/auth/signup` | 회원가입 후 바로 로그인 (`username`, `password`) |
+| POST | `/api/auth/login` | 로그인. HttpOnly 쿠키 `lunch_session`(30일)을 내려줘요 |
+| POST | `/api/auth/logout` | 로그아웃 |
+| GET | `/api/auth/me` | 로그인한 사용자 |
 | GET | `/api/restaurants` | 식당 목록. `tag`(여러 번), `price_band`(`under_10k`·`10k_20k`·`over_20k`, 여러 번), `visited` 필터 |
 | POST | `/api/restaurants` | 식당 등록 (없는 태그는 새로 만들어요) |
 | GET | `/api/restaurants/{id}` | 식당 한 곳 조회 |
@@ -108,15 +119,17 @@ cd ../backend && .venv/bin/uvicorn app.main:app --port 8001
 | POST | `/api/recommendations` | 식당 룰렛 (`winner`, `wheel`, `remaining`) |
 | POST | `/api/recommendations/tag` | 태그 룰렛. 본문 없이 저장된 종류 전체에서 (`winner_tag`, `wheel`) |
 
+인증 API를 뺀 나머지는 로그인하지 않으면 401과 `{"detail": "로그인이 필요해요."}`를 돌려줘요. `/docs`에서 시험할 때는 먼저 `/api/auth/login`을 실행하면 같은 브라우저 쿠키로 이어서 호출할 수 있어요.
+
 후보가 없으면 두 추천 API 모두 404와 `{"detail": {"code": "NO_CANDIDATES", "message": "..."}}`를 돌려줘요.
 
 ## 6. 디렉터리
 
 ```text
-backend/app/            main.py, config.py, database.py, models.py, schemas.py
-backend/app/routers/    restaurants.py, tags.py(태그 목록·삭제), recommendations.py
-backend/app/services/   filters.py(조건 필터), recommend.py(무작위 선택과 룰렛 칸)
-backend/sql/            schema.sql
+backend/app/            main.py, config.py, database.py, models.py, schemas.py, dependencies.py(로그인 사용자)
+backend/app/routers/    auth.py, restaurants.py, tags.py(태그 목록·삭제), recommendations.py
+backend/app/services/   auth.py(비밀번호·세션), filters.py(조건 필터), recommend.py(무작위 선택과 룰렛 칸)
+backend/sql/            schema.sql, migrations/
 frontend/src/api/       백엔드 호출 함수
 frontend/src/components/ 룰렛, 식당 폼·목록, 필터, 확인 창
 frontend/src/pages/     식당 관리 화면, 룰렛 화면

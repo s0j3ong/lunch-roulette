@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 
 from app.database import get_db
+from app.dependencies import get_current_user_id
 from app.schemas import RecommendationRequest, RecommendationResponse, TagRecommendationResponse
 from app.services.recommend import NoCandidatesError, recommend_restaurant, recommend_tag
 
@@ -26,9 +27,10 @@ NO_TAG_CANDIDATES_DETAIL = {
 def recommend(
     payload: RecommendationRequest,
     session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
 ) -> RecommendationResponse:
     try:
-        return recommend_restaurant(session, payload)
+        return recommend_restaurant(session, user_id, payload)
     except NoCandidatesError:
         raise HTTPException(status_code=404, detail=NO_CANDIDATES_DETAIL) from None
 
@@ -38,8 +40,11 @@ def recommend(
     response_model=TagRecommendationResponse,
     responses={404: {"description": "저장된 음식 종류가 없음 (NO_CANDIDATES)"}},
 )
-def recommend_food_tag(session: Session = Depends(get_db)) -> TagRecommendationResponse:
+def recommend_food_tag(
+    session: Session = Depends(get_db),
+    user_id: int = Depends(get_current_user_id),
+) -> TagRecommendationResponse:
     try:
-        return recommend_tag(session)
+        return recommend_tag(session, user_id)
     except NoCandidatesError:
         raise HTTPException(status_code=404, detail=NO_TAG_CANDIDATES_DETAIL) from None
