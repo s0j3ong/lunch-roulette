@@ -197,10 +197,19 @@ FastAPI 백엔드는 인증 네 개, 식당 CRUD 다섯 개, 태그 두 개, 추
 | 애플리케이션 계층 | FastAPI | 요청 처리, 조건 필터링과 무작위 추천 로직 |
 | 데이터 계층 | MariaDB | 식당과 태그 데이터 저장 |
 
-React, FastAPI, MariaDB 세 계층을 개발 서버 한 대에 구성하되, 계층별 역할을 나눠 두어 나중에 별도 서버로 분리할 수 있게 한다.
+React, FastAPI, MariaDB 세 계층을 서로 다른 서버로 분리해 운영한다. 개발 중에는 WSL 한 대에서 세 계층을 따로 실행하던 구성을 그대로 쓰고, 배포 환경은 AWS EC2 인스턴스 세 대로 나눈다.
+
+| 서버 | 올라가는 것 | 외부에서 열어 주는 포트 |
+| --- | --- | --- |
+| frontend 서버 (EC2 1) | nginx. React 빌드 결과(`frontend/dist`)를 서빙하고 `/api` 요청을 backend 서버로 프록시한다 | 80(HTTPS를 적용하면 443). 사용자에게 공개 |
+| backend 서버 (EC2 2) | FastAPI(uvicorn). API만 서빙한다 | 8000. frontend 서버에서만 접근 |
+| db 서버 (EC2 3) | MariaDB | 3306. backend 서버에서만 접근 |
 
 - 프론트엔드는 백엔드 API를 통해서만 데이터를 요청하고, DB 접근은 백엔드가 담당한다.
-- DB 접속 정보는 프론트엔드에 포함하지 않는다.
+- 브라우저는 frontend 서버 주소 하나만 쓴다. `/api`는 같은 주소에서 nginx가 backend 서버로 넘기므로 CORS 설정은 필요 없고, 로그인 쿠키도 같은 주소의 쿠키로 동작한다.
+- 서버 사이의 접근은 보안 그룹으로 제한한다. backend 서버의 8000번은 frontend 서버의 보안 그룹만, db 서버의 3306번은 backend 서버의 보안 그룹만 허용하고, 그 밖의 인바운드는 열지 않는다. 관리용 SSH(22)는 관리자 IP로 제한한다.
+- DB 접속 정보는 backend 서버의 `backend/.env`에만 두고, 호스트는 db 서버의 사설 IP를 쓴다. DB 계정은 backend 서버의 주소에서만 접속하도록 제한한다. 프론트엔드와 frontend 서버에는 DB 정보와 backend 서버 주소를 코드에 넣지 않고, backend 서버 주소는 nginx 설정에만 둔다.
+- backend 서버는 화면 파일을 서빙하지 않는다(개발 중 `frontend/dist`가 있으면 붙이던 기능은 배포본에 `dist`가 없어 쓰이지 않는다).
 - 디렉터리 구조와 실행 방식은 `PLAN.md`에서 정한다.
 
 ## 10. 확장 로드맵
