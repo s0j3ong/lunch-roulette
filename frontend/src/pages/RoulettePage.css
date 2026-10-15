@@ -49,9 +49,9 @@
   color: var(--color-danger);
 }
 
-@media (min-width: 960px) {
-  .roulette-page {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+@media (min-width: 720px) {
+  .condition-fields {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr) minmax(0, 1fr);
     align-items: start;
   }
 }

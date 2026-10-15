@@ -4,18 +4,17 @@ export function getTags(signal) {
   return request('/api/tags', { signal })
 }
 
+export function deleteTag(id) {
+  return request(`/api/tags/${id}`, { method: 'DELETE' })
+}
+
 export function getRestaurants(filters = {}, signal) {
   const params = new URLSearchParams()
   for (const tag of filters.tags ?? []) params.append('tag', tag)
-  if (filters.priceMin != null) params.set('price_min', filters.priceMin)
-  if (filters.priceMax != null) params.set('price_max', filters.priceMax)
+  for (const band of filters.priceBands ?? []) params.append('price_band', band)
   if (filters.visited != null) params.set('visited', filters.visited)
   const query = params.toString()
   return request(`/api/restaurants${query ? `?${query}` : ''}`, { signal })
-}
-
-export function getPriceRange(signal) {
-  return request('/api/price-range', { signal })
 }
 
 export function getRestaurant(id, signal) {

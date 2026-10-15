@@ -1,35 +1,27 @@
 .tag-roulette {
-  margin-top: 1.5rem;
-  padding-top: 1.25rem;
-  border-top: 1px solid var(--color-border);
-}
-
-.tag-roulette h2 {
-  margin: 0;
-  font-size: 1.2rem;
+  display: grid;
+  gap: 1rem;
+  text-align: center;
 }
 
 .tag-roulette-description {
-  margin: 0.35rem 0 0;
+  margin: 0;
   color: var(--color-ink-muted);
   font-size: 0.95rem;
 }
 
-.tag-roulette-body {
-  display: grid;
-  grid-template-columns: minmax(8rem, 12rem) minmax(0, 1fr);
-  align-items: center;
-  gap: 1rem;
-  margin-top: 1rem;
+.tag-roulette-wheel {
+  width: min(100%, 18rem);
+  margin: 0 auto;
 }
 
 .tag-roulette-wheel .wheel {
   width: 100%;
 }
 
-.tag-roulette-side {
-  display: grid;
-  gap: 0.75rem;
+.tag-roulette-status {
+  margin: 0;
+  color: var(--color-ink-muted);
 }
 
 .tag-roulette-result {
@@ -38,26 +30,7 @@
   border-radius: 0.5rem;
   background: var(--color-primary-soft);
   color: var(--color-ink);
-  font-size: 1.05rem;
-}
-
-.tag-spin-button {
-  width: 100%;
-}
-
-@media (max-width: 480px) {
-  .tag-roulette-body {
-    grid-template-columns: 1fr;
-    justify-items: center;
-  }
-
-  .tag-roulette-wheel {
-    width: min(100%, 14rem);
-  }
-
-  .tag-roulette-side {
-    width: 100%;
-  }
+  font-size: 1.1rem;
 }
 
 .tag-roulette-note {
@@ -65,4 +38,22 @@
   margin-top: 0.25rem;
   color: var(--color-ink-muted);
   font-size: 0.875rem;
+}
+
+.tag-roulette-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.5rem;
+}
+
+.tag-random-button {
+  min-height: 2.25rem;
+  padding: 0.3rem 0.85rem;
+  border: 1px solid var(--color-primary-strong);
+  border-radius: 999px;
+  background: var(--color-primary-soft);
+  color: var(--color-ink);
+  font-weight: 700;
+  cursor: pointer;
 }

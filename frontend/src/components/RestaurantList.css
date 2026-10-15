@@ -1,38 +1,61 @@
-.restaurant-list {
+.restaurant-grid {
   display: grid;
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: 0.85rem;
   margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.restaurant-item {
-  padding: 1rem;
-  border: 1px solid var(--color-border);
-  border-radius: 0.75rem;
-  background: var(--color-surface);
+@media (min-width: 960px) {
+  .restaurant-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
 }
 
-.restaurant-item-header {
+.restaurant-grid > li {
+  display: flex;
+  min-width: 0;
+}
+
+.restaurant-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.85rem;
+  background: var(--color-surface);
+  color: var(--color-ink);
+  text-align: left;
+  cursor: pointer;
+}
+
+.restaurant-card:hover {
+  border-color: var(--color-primary-strong);
+}
+
+.restaurant-card-header {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 0.75rem;
+  gap: 0.5rem;
 }
 
-.restaurant-item h3 {
-  margin: 0;
+.restaurant-card-name {
   font-size: 1.1rem;
+  font-weight: 800;
   overflow-wrap: anywhere;
 }
 
 .visit-badge {
   flex: 0 0 auto;
-  padding: 0.15rem 0.55rem;
+  padding: 0.1rem 0.5rem;
   border: 1px solid var(--color-border);
   border-radius: 999px;
   color: var(--color-ink-muted);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
 }
 
 .visit-badge.visited {
@@ -45,12 +68,12 @@
   display: flex;
   flex-wrap: wrap;
   gap: 0.35rem;
-  margin: 0.6rem 0 0;
+  margin: 0;
   padding: 0;
   list-style: none;
 }
 
-.restaurant-tags li {
+.restaurant-tags > * {
   padding: 0.1rem 0.55rem;
   border-radius: 999px;
   background: var(--color-primary-soft);
@@ -58,37 +81,23 @@
   font-size: 0.85rem;
 }
 
-.restaurant-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem 1.25rem;
-  margin: 0.75rem 0 0;
-  color: var(--color-ink-muted);
+.restaurant-card-meta {
+  display: grid;
+  gap: 0.2rem;
   font-size: 0.95rem;
-}
-
-.restaurant-meta div {
-  display: flex;
-  gap: 0.35rem;
-}
-
-.restaurant-meta dt {
-  font-weight: 600;
-}
-
-.restaurant-meta dd {
-  margin: 0;
-  color: var(--color-ink);
   overflow-wrap: anywhere;
 }
 
-.restaurant-memo {
-  flex-basis: 100%;
+.meta-label {
+  margin-right: 0.25rem;
+  color: var(--color-ink-muted);
+  font-weight: 600;
 }
 
-.restaurant-actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 0.5rem;
-  margin-top: 0.75rem;
+.restaurant-card-memo {
+  padding-top: 0.55rem;
+  border-top: 1px dashed var(--color-border);
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+  overflow-wrap: anywhere;
 }

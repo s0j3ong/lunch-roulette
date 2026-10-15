@@ -1,17 +1,15 @@
 import { useEffect, useState } from 'react'
 import { recommendRestaurant } from '../api/recommendations'
-import { getPriceRange, getRestaurants, getTags } from '../api/restaurants'
-import PriceRangeFilter from '../components/PriceRangeFilter'
+import { getRestaurants, getTags } from '../api/restaurants'
+import Modal from '../components/Modal'
+import PriceBandFilter from '../components/PriceBandFilter'
 import TagFilter from '../components/TagFilter'
 import VisitedFilter from '../components/VisitedFilter'
 import Wheel from '../components/Wheel'
 import TagRoulette from '../components/TagRoulette'
 import { useWheelSpin } from '../hooks/useWheelSpin'
+import { priceText } from '../priceBands'
 import './RoulettePage.css'
-
-function formatPrice(price) {
-  return price === null ? '가격 미정' : `${price.toLocaleString('ko-KR')}원`
-}
 
 function ResultCard({ result, isConfirmed }) {
   const { winner } = result
@@ -22,7 +20,8 @@ function ResultCard({ result, isConfirmed }) {
       <p className="result-meta">
         {[
           winner.tags.join(', ') || '종류 없음',
-          formatPrice(winner.price),
+          priceText(winner.price),
+          winner.location,
           winner.visited ? '가본 곳' : '가고 싶은 곳',
           winner.rating ? `★ ${winner.rating}점` : null,
         ]
@@ -35,11 +34,11 @@ function ResultCard({ result, isConfirmed }) {
 }
 
 function RoulettePage() {
-  const [tags, setTags] = useState([])
-  const [priceBounds, setPriceBounds] = useState(null)
+  const [tags, setTags] = useState(null)
   const [optionsError, setOptionsError] = useState('')
   const [selectedTags, setSelectedTags] = useState([])
-  const [priceRange, setPriceRange] = useState(null)
+  const [priceBands, setPriceBands] = useState([])
+  const [isTagRouletteOpen, setIsTagRouletteOpen] = useState(false)
   const [visited, setVisited] = useState(null)
   const [wheel, setWheel] = useState([])
   const [isSpinning, setIsSpinning] = useState(false)
@@ -57,13 +56,11 @@ function RoulettePage() {
 
     async function loadOptions() {
       try {
-        const [tagList, bounds, restaurants] = await Promise.all([
+        const [tagList, restaurants] = await Promise.all([
           getTags(controller.signal),
-          getPriceRange(controller.signal),
           getRestaurants({}, controller.signal),
         ])
         setTags(tagList)
-        setPriceBounds(bounds)
         setRestaurantCount(restaurants.length)
       } catch (error) {
         if (!controller.signal.aborted) {
@@ -87,7 +84,7 @@ function RoulettePage() {
 
   function resetConditions() {
     setSelectedTags([])
-    setPriceRange(null)
+    setPriceBands([])
     setVisited(null)
     resetRound()
   }
@@ -108,8 +105,7 @@ function RoulettePage() {
     try {
       const response = await recommendRestaurant({
         tags: selectedTags,
-        price_min: priceRange?.[0] ?? null,
-        price_max: priceRange?.[1] ?? null,
+        price_bands: priceBands,
         visited,
         exclude_ids: nextExcludeIds,
       })
@@ -136,24 +132,42 @@ function RoulettePage() {
         <h1 id="conditions-title">오늘의 조건</h1>
         <p className="section-description">조건을 고르지 않으면 저장한 모든 식당이 후보예요.</p>
         {optionsError && <p className="error-text" role="alert">{optionsError}</p>}
-        {!priceBounds && !optionsError && <p role="status">조건을 불러오고 있어요.</p>}
-        {priceBounds && (
+        {!tags && !optionsError && <p role="status">조건을 불러오고 있어요.</p>}
+        {tags && (
           <fieldset className="condition-fields" disabled={isSpinning || isTagSpinning}>
-            <TagFilter tags={tags} selected={selectedTags} onChange={changeCondition(setSelectedTags)} />
-            <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={changeCondition(setPriceRange)} />
+            <TagFilter
+              tags={tags}
+              selected={selectedTags}
+              onChange={changeCondition(setSelectedTags)}
+              action={
+                <button
+                  className="tag-random-button"
+                  type="button"
+                  onClick={() => setIsTagRouletteOpen(true)}
+                >
+                  랜덤 정하기
+                </button>
+              }
+            />
+            <PriceBandFilter selected={priceBands} onChange={changeCondition(setPriceBands)} />
             <VisitedFilter value={visited} onChange={changeCondition(setVisited)} />
           </fieldset>
         )}
-        {restaurantCount !== 0 && (
-          <TagRoulette
-            priceRange={priceRange}
-            visited={visited}
-            disabled={isSpinning}
-            onSpinningChange={setIsTagSpinning}
-            onResult={(tagName) => changeCondition(setSelectedTags)([tagName])}
-          />
-        )}
       </section>
+
+      <Modal
+        open={isTagRouletteOpen}
+        title="음식 종류 랜덤 정하기"
+        onClose={() => setIsTagRouletteOpen(false)}
+        closeDisabled={isTagSpinning}
+        size="small"
+      >
+        <TagRoulette
+          onSpinningChange={setIsTagSpinning}
+          onResult={(tagName) => changeCondition(setSelectedTags)([tagName])}
+          onClose={() => setIsTagRouletteOpen(false)}
+        />
+      </Modal>
 
       <section className="roulette-stage" aria-labelledby="wheel-title">
         <h2 id="wheel-title">식당 룰렛</h2>
@@ -174,7 +188,7 @@ function RoulettePage() {
               {noCandidates && (
                 <div className="empty-state">
                   <p>조건에 맞는 식당이 없어요.</p>
-                  <p>음식 종류, 가격 범위, 가본 곳 조건을 바꿔 보세요.</p>
+                  <p>음식 종류, 가격대, 가본 곳 조건을 바꿔 보세요.</p>
                   <button className="secondary-button" type="button" onClick={resetConditions}>
                     조건 초기화하기
                   </button>

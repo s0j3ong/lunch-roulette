@@ -9,7 +9,7 @@ ENV_FILE = Path(__file__).resolve().parents[1] / ".env"
 load_dotenv(ENV_FILE)
 
 CURRENT_USER_ID = 1
-DEFAULT_TAG_NAMES = ("한식", "중식", "일식", "양식")
+DEFAULT_TAG_NAMES = ("한식", "중식", "일식", "양식", "분식", "카페", "술집")
 
 
 def _required_setting(name: str) -> str:

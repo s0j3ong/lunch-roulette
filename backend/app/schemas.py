@@ -1,13 +1,19 @@
 from datetime import datetime
+from typing import Literal
 
-from pydantic import BaseModel, ConfigDict, Field, field_validator, model_validator
+from pydantic import BaseModel, ConfigDict, Field, field_validator
+
+
+# 가격대: 1만원 이하 / 1~2만원 / 2만원 이상. 경계값은 services/filters.py에 있다.
+PriceBand = Literal["under_10k", "10k_20k", "over_20k"]
 
 
 class RestaurantCreate(BaseModel):
     name: str = Field(min_length=1, max_length=100)
     tags: list[str] = Field(default_factory=list)
     price: int | None = Field(default=None, ge=0)
-    memo: str | None = Field(default=None, max_length=255)
+    location: str | None = Field(default=None, max_length=255)
+    memo: str | None = Field(default=None, max_length=100)
     visited: bool = False
     rating: int | None = Field(default=None, ge=1, le=5)
 
@@ -41,6 +47,7 @@ class RestaurantResponse(BaseModel):
     name: str
     tags: list[str]
     price: int | None
+    location: str | None
     memo: str | None
     visited: bool
     rating: int | None
@@ -55,6 +62,7 @@ class RestaurantListItem(BaseModel):
     name: str
     tags: list[str]
     price: int | None
+    location: str | None
     memo: str | None
     visited: bool
     rating: int | None
@@ -66,15 +74,13 @@ class TagResponse(BaseModel):
     is_default: bool
 
 
-class PriceRangeResponse(BaseModel):
-    min_price: int | None
-    max_price: int | None
+class TagListItem(TagResponse):
+    restaurant_count: int
 
 
 class RecommendationRequest(BaseModel):
     tags: list[str] = Field(default_factory=list)
-    price_min: int | None = Field(default=None, ge=0)
-    price_max: int | None = Field(default=None, ge=0)
+    price_bands: list[PriceBand] = Field(default_factory=list)
     visited: bool | None = None
     exclude_ids: list[int] = Field(default_factory=list)
 
@@ -82,12 +88,6 @@ class RecommendationRequest(BaseModel):
     @classmethod
     def normalize_tags(cls, values: list[str]) -> list[str]:
         return list(dict.fromkeys(value.strip() for value in values if value.strip()))
-
-    @model_validator(mode="after")
-    def check_price_range(self) -> "RecommendationRequest":
-        if self.price_min is not None and self.price_max is not None and self.price_min > self.price_max:
-            raise ValueError("최저 가격이 최고 가격보다 클 수 없어요.")
-        return self
 
 
 class RecommendationResponse(BaseModel):

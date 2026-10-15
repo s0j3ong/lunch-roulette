@@ -28,6 +28,7 @@ def _list_item(restaurant: Restaurant) -> RestaurantListItem:
         name=restaurant.name,
         tags=[tag.name for tag in restaurant.tags],
         price=restaurant.price,
+        location=restaurant.location,
         memo=restaurant.memo,
         visited=restaurant.visited,
         rating=restaurant.rating,
@@ -46,8 +47,7 @@ def recommend_restaurant(session: Session, request: RecommendationRequest) -> Re
     statement = apply_restaurant_filters(
         select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID))),
         tags=request.tags,
-        price_min=request.price_min,
-        price_max=request.price_max,
+        price_bands=request.price_bands,
         visited=request.visited,
     )
     if request.exclude_ids:
@@ -67,27 +67,9 @@ def recommend_restaurant(session: Session, request: RecommendationRequest) -> Re
     )
 
 
-def recommend_tag(session: Session, request: RecommendationRequest) -> TagRecommendationResponse:
-    # 가격·가본 곳·제외 조건에 맞는 식당이 하나라도 붙은 태그만 후보로 한다.
-    restaurant_ids = apply_restaurant_filters(
-        select(Restaurant.id),
-        tags=[],
-        price_min=request.price_min,
-        price_max=request.price_max,
-        visited=request.visited,
-    )
-    if request.exclude_ids:
-        restaurant_ids = restaurant_ids.where(Restaurant.id.not_in(request.exclude_ids))
-
-    statement = select(Tag).where(
-        Tag.user_id == CURRENT_USER_ID,
-        Tag.restaurants.any(Restaurant.id.in_(restaurant_ids)),
-    )
-    # 태그를 골라 보냈으면 그 태그들 안에서만 고른다.
-    if request.tags:
-        statement = statement.where(Tag.name.in_(request.tags))
-
-    candidates = list(session.scalars(statement).all())
+def recommend_tag(session: Session) -> TagRecommendationResponse:
+    # 저장된 음식 종류 전체가 후보다. 8개보다 많으면 칸에는 무작위 8개만 올라간다.
+    candidates = list(session.scalars(select(Tag).where(Tag.user_id == CURRENT_USER_ID)).all())
     if not candidates:
         raise NoCandidatesError
 

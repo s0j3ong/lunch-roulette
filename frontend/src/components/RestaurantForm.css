@@ -1,25 +1,13 @@
-.restaurant-form-card {
-  padding: 1.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  background: var(--color-surface);
-}
-
-.restaurant-form-card h1 {
-  margin: 0;
-  color: var(--color-ink);
-  font-size: 1.75rem;
-}
-
-.form-description {
-  margin-top: 0.5rem;
-  color: var(--color-ink-muted);
-}
-
 .restaurant-form {
   display: grid;
   gap: 1.1rem;
-  margin-top: 1.5rem;
+}
+
+.memo-count {
+  justify-self: end;
+  color: var(--color-ink-muted);
+  font-size: 0.85rem;
+  font-weight: 400;
 }
 
 .form-field {
@@ -100,17 +88,72 @@
   outline-offset: 2px;
 }
 
-.custom-tag-field {
-  margin-top: 1rem;
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
 }
 
-.custom-tag-field > label {
-  display: block;
+.tag-add-button,
+.tag-edit-toggle,
+.tag-delete-button {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
+  border-radius: 999px;
+  background: var(--color-surface);
+  cursor: pointer;
 }
 
-.custom-tag-controls {
-  display: flex;
+.tag-add-button {
+  border: 1px dashed var(--color-primary-strong);
+  color: var(--color-primary-strong);
+  font-weight: 700;
+}
+
+.tag-edit-toggle {
+  margin-bottom: 0.55rem;
+  border: 1px solid var(--color-border);
+  color: var(--color-ink);
+  font-size: 0.9rem;
+}
+
+.tag-edit-toggle[aria-pressed='true'] {
+  border-color: var(--color-primary-strong);
+  background: var(--color-primary-soft);
+  font-weight: 700;
+}
+
+.tag-edit-hint {
+  margin: 0 0 0.55rem;
+  color: var(--color-ink-muted);
+  font-size: 0.9rem;
+}
+
+.tag-delete-button {
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.tag-add-controls {
+  display: inline-flex;
+  flex: 1 1 14rem;
   gap: 0.5rem;
+  min-width: 0;
+}
+
+.restaurant-form .tag-add-controls input {
+  flex: 1 1 auto;
+  width: auto;
+  min-width: 0;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
+}
+
+.tag-add-controls .secondary-button {
+  min-height: 2.25rem;
+  padding: 0.35rem 0.8rem;
 }
 
 .checkbox-field {
@@ -129,17 +172,6 @@
 
 .success-message {
   color: var(--color-primary-strong);
-}
-
-@media (max-width: 480px) {
-  .restaurant-form-card {
-    padding: 1rem;
-  }
-
-  .custom-tag-controls {
-    align-items: stretch;
-    flex-direction: column;
-  }
 }
 
 .form-actions {

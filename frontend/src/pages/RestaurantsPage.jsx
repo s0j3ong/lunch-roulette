@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import { deleteRestaurant, getPriceRange, getRestaurants, getTags } from '../api/restaurants'
+import { useEffect, useState } from 'react'
+import { deleteRestaurant, getRestaurants, getTags } from '../api/restaurants'
 import ConfirmDialog from '../components/ConfirmDialog'
-import PriceRangeFilter from '../components/PriceRangeFilter'
+import Modal from '../components/Modal'
+import PriceBandFilter from '../components/PriceBandFilter'
+import RestaurantDetail from '../components/RestaurantDetail'
 import RestaurantForm from '../components/RestaurantForm'
 import RestaurantList from '../components/RestaurantList'
 import TagFilter from '../components/TagFilter'
@@ -11,39 +13,29 @@ function RestaurantsPage() {
   const [restaurants, setRestaurants] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [loadError, setLoadError] = useState('')
-  const [editingId, setEditingId] = useState(null)
   const [notice, setNotice] = useState('')
+  // 폼 팝업: null이면 닫힘, 'new'면 등록, 숫자면 그 식당 수정
+  const [formTarget, setFormTarget] = useState(null)
+  const [detailTarget, setDetailTarget] = useState(null)
   const [deleteTarget, setDeleteTarget] = useState(null)
   const [isDeleting, setIsDeleting] = useState(false)
   const [deleteError, setDeleteError] = useState('')
-  const [tags, setTags] = useState([])
-  const [priceBounds, setPriceBounds] = useState(null)
+  const [tags, setTags] = useState(null)
   const [selectedTags, setSelectedTags] = useState([])
-  const [priceRange, setPriceRange] = useState(null)
-  const formRef = useRef(null)
+  const [priceBands, setPriceBands] = useState([])
 
   const [reloadKey, setReloadKey] = useState(0)
   const reloadRestaurants = () => setReloadKey((key) => key + 1)
-  const isFiltered = selectedTags.length > 0 || priceRange !== null
+  const isFiltered = selectedTags.length > 0 || priceBands.length > 0
 
-  // 태그 목록과 가격 범위는 식당이 바뀔 때마다 다시 불러온다.
+  // 태그 목록은 식당이 바뀔 때마다 다시 불러온다.
   useEffect(() => {
     const controller = new AbortController()
-
-    async function loadFilterOptions() {
-      try {
-        const [tagList, bounds] = await Promise.all([
-          getTags(controller.signal),
-          getPriceRange(controller.signal),
-        ])
-        setTags(tagList)
-        setPriceBounds(bounds)
-      } catch {
+    getTags(controller.signal)
+      .then(setTags)
+      .catch(() => {
         // 필터 선택지를 못 불러와도 목록은 볼 수 있게 둔다.
-      }
-    }
-
-    loadFilterOptions()
+      })
     return () => controller.abort()
   }, [reloadKey])
 
@@ -52,14 +44,7 @@ function RestaurantsPage() {
 
     async function loadRestaurants() {
       try {
-        const data = await getRestaurants(
-          {
-            tags: selectedTags,
-            priceMin: priceRange?.[0],
-            priceMax: priceRange?.[1],
-          },
-          controller.signal,
-        )
+        const data = await getRestaurants({ tags: selectedTags, priceBands }, controller.signal)
         setRestaurants(data)
         setLoadError('')
       } catch (error) {
@@ -73,29 +58,34 @@ function RestaurantsPage() {
       }
     }
 
-    // 가격 막대를 움직이는 동안 요청이 몰리지 않게 잠깐 기다렸다가 불러온다.
+    // 필터를 빠르게 여러 번 바꿀 때 요청이 몰리지 않게 잠깐 기다렸다가 불러온다.
     const timer = setTimeout(loadRestaurants, 150)
     return () => {
       clearTimeout(timer)
       controller.abort()
     }
-  }, [reloadKey, selectedTags, priceRange])
+  }, [reloadKey, selectedTags, priceBands])
 
   function resetFilters() {
     setSelectedTags([])
-    setPriceRange(null)
+    setPriceBands([])
   }
 
-  function startEdit(id) {
-    setEditingId(id)
+  function openForm(target) {
     setNotice('')
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches
-    formRef.current?.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'start' })
+    setDetailTarget(null)
+    setFormTarget(target)
   }
 
   function handleSaved(saved, message) {
-    setEditingId(null)
-    setNotice(message ?? '')
+    setFormTarget(null)
+    setNotice(message)
+    reloadRestaurants()
+  }
+
+  // 삭제한 종류는 필터에서도 빼고, 식당 카드의 태그가 바뀌었으니 목록을 다시 불러온다.
+  function handleTagDeleted(name) {
+    setSelectedTags((current) => current.filter((tag) => tag !== name))
     reloadRestaurants()
   }
 
@@ -109,9 +99,9 @@ function RestaurantsPage() {
     setDeleteError('')
     try {
       await deleteRestaurant(deleteTarget.id)
-      if (editingId === deleteTarget.id) setEditingId(null)
       setNotice(`'${deleteTarget.name}'을(를) 삭제했어요.`)
       setDeleteTarget(null)
+      setDetailTarget(null)
       reloadRestaurants()
     } catch (error) {
       setDeleteError(error.message || '삭제하지 못했어요. 다시 시도해 주세요.')
@@ -122,28 +112,24 @@ function RestaurantsPage() {
 
   return (
     <div className="restaurants-page">
-      <div className="restaurants-form-column" ref={formRef}>
-        <RestaurantForm
-          key={editingId ?? 'new'}
-          restaurantId={editingId}
-          onSaved={handleSaved}
-          onCancel={() => setEditingId(null)}
-        />
-      </div>
+      {/* 필터 선택지를 불러온 뒤에만 보여준다. 연결 실패 시 잘못된 빈 안내가 나오지 않게 한다. */}
+      {tags && (
+        <section className="list-filters" aria-label="식당 찾기">
+          <TagFilter tags={tags} selected={selectedTags} onChange={setSelectedTags} />
+          <PriceBandFilter selected={priceBands} onChange={setPriceBands} />
+        </section>
+      )}
 
-      <section className="restaurants-list-column" aria-labelledby="restaurant-list-title">
+      <section aria-labelledby="restaurant-list-title">
         <div className="section-heading">
-          <h2 id="restaurant-list-title">내 식당 목록</h2>
-          {!isLoading && !loadError && <span className="count-label">{restaurants.length}곳</span>}
+          <h1 id="restaurant-list-title">
+            내 식당 목록
+            {!isLoading && !loadError && <span className="count-label">{restaurants.length}곳</span>}
+          </h1>
+          <button className="primary-button" type="button" onClick={() => openForm('new')}>
+            + 식당 추가
+          </button>
         </div>
-
-        {/* 필터 선택지를 불러온 뒤에만 보여준다. 연결 실패 시 잘못된 빈 안내가 나오지 않게 한다. */}
-        {priceBounds && (
-          <div className="list-filters">
-            <TagFilter tags={tags} selected={selectedTags} onChange={setSelectedTags} />
-            <PriceRangeFilter bounds={priceBounds} value={priceRange} onChange={setPriceRange} />
-          </div>
-        )}
 
         {notice && <p className="page-notice" role="status">{notice}</p>}
 
@@ -159,7 +145,7 @@ function RestaurantsPage() {
         ) : restaurants.length === 0 && isFiltered ? (
           <div className="empty-state">
             <p>조건에 맞는 식당이 없어요.</p>
-            <p>음식 종류나 가격 범위를 바꿔 보세요.</p>
+            <p>음식 종류나 가격대를 바꿔 보세요.</p>
             <button className="secondary-button" type="button" onClick={resetFilters}>
               필터 초기화하기
             </button>
@@ -167,12 +153,35 @@ function RestaurantsPage() {
         ) : restaurants.length === 0 ? (
           <div className="empty-state">
             <p>아직 저장한 식당이 없어요.</p>
-            <p>식당 등록 폼에서 첫 식당을 저장해 보세요.</p>
+            <p>오른쪽 위의 "+ 식당 추가"로 첫 식당을 저장해 보세요.</p>
           </div>
         ) : (
-          <RestaurantList restaurants={restaurants} onEdit={startEdit} onDelete={openDelete} />
+          <RestaurantList restaurants={restaurants} onOpen={setDetailTarget} />
         )}
       </section>
+
+      <Modal
+        open={formTarget !== null}
+        title={formTarget === 'new' ? '식당 추가' : '식당 수정'}
+        onClose={() => setFormTarget(null)}
+      >
+        <RestaurantForm
+          key={formTarget ?? 'closed'}
+          restaurantId={formTarget === 'new' ? null : formTarget}
+          onSaved={handleSaved}
+          onCancel={() => setFormTarget(null)}
+          onTagDeleted={handleTagDeleted}
+        />
+      </Modal>
+
+      <Modal
+        open={detailTarget !== null}
+        title={detailTarget?.name ?? ''}
+        onClose={() => setDetailTarget(null)}
+        size="small"
+      >
+        {detailTarget && <RestaurantDetail restaurant={detailTarget} onEdit={openForm} onDelete={openDelete} />}
+      </Modal>
 
       <ConfirmDialog
         open={deleteTarget !== null}

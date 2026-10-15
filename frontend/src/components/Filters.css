@@ -45,19 +45,11 @@
   outline: none;
 }
 
-.filter-chip input,
-.filter-toggle input {
+.filter-chip input {
   width: 1.05rem;
   height: 1.05rem;
   margin: 0;
   accent-color: var(--color-primary-strong);
-}
-
-.filter-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.45rem;
-  cursor: pointer;
 }
 
 .filter-hint {
@@ -66,25 +58,15 @@
   font-size: 0.9rem;
 }
 
-.price-range {
-  display: grid;
-  gap: 0.3rem;
-  margin-top: 0.6rem;
+.filter-group-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
 }
 
-.price-range label {
-  margin-top: 0.3rem;
-  font-size: 0.9rem;
-}
-
-.price-range input[type='range'] {
-  width: 100%;
-  margin: 0;
-  accent-color: var(--color-primary-strong);
-}
-
-.price-range-summary {
-  margin: 0;
-  color: var(--color-ink);
+.filter-group-title {
   font-weight: 700;
 }

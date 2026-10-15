@@ -3,7 +3,8 @@ CREATE TABLE restaurants (
     user_id INT NOT NULL DEFAULT 1,
     name VARCHAR(100) NOT NULL,
     price INT NULL,
-    memo VARCHAR(255) NULL,
+    location VARCHAR(255) NULL,
+    memo VARCHAR(100) NULL,
     visited BOOLEAN NOT NULL DEFAULT FALSE,
     rating TINYINT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -40,4 +41,7 @@ VALUES
     (1, '한식', TRUE),
     (1, '중식', TRUE),
     (1, '일식', TRUE),
-    (1, '양식', TRUE);
+    (1, '양식', TRUE),
+    (1, '분식', TRUE),
+    (1, '카페', TRUE),
+    (1, '술집', TRUE);

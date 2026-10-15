@@ -1,8 +1,10 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useId, useRef } from 'react'
 import './ConfirmDialog.css'
 
 function ConfirmDialog({ open, title, message, confirmLabel, isWorking, error, onConfirm, onCancel }) {
   const dialogRef = useRef(null)
+  // 한 화면에 확인 창이 여러 개 있어도 제목 id가 겹치지 않게 한다.
+  const titleId = useId()
 
   useEffect(() => {
     const dialog = dialogRef.current
@@ -18,13 +20,13 @@ function ConfirmDialog({ open, title, message, confirmLabel, isWorking, error, o
     <dialog
       ref={dialogRef}
       className="confirm-dialog"
-      aria-labelledby="confirm-dialog-title"
+      aria-labelledby={titleId}
       onCancel={(event) => {
         event.preventDefault()
         if (!isWorking) onCancel()
       }}
     >
-      <h2 id="confirm-dialog-title">{title}</h2>
+      <h2 id={titleId}>{title}</h2>
       <p>{message}</p>
       {error && <p className="confirm-dialog-error" role="alert">{error}</p>}
       <div className="confirm-dialog-actions">

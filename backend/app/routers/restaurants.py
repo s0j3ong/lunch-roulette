@@ -7,7 +7,7 @@ from sqlalchemy.orm import Session, selectinload
 from app.config import CURRENT_USER_ID, DEFAULT_TAG_NAMES
 from app.database import get_db
 from app.models import Restaurant, Tag
-from app.schemas import RestaurantCreate, RestaurantListItem, RestaurantResponse, RestaurantUpdate
+from app.schemas import PriceBand, RestaurantCreate, RestaurantListItem, RestaurantResponse, RestaurantUpdate
 from app.services.filters import apply_restaurant_filters
 
 
@@ -56,6 +56,7 @@ def _response(restaurant: Restaurant) -> RestaurantResponse:
         name=restaurant.name,
         tags=[tag.name for tag in restaurant.tags],
         price=restaurant.price,
+        location=restaurant.location,
         memo=restaurant.memo,
         visited=restaurant.visited,
         rating=restaurant.rating,
@@ -67,19 +68,14 @@ def _response(restaurant: Restaurant) -> RestaurantResponse:
 @router.get("", response_model=list[RestaurantListItem])
 def list_restaurants(
     tag: list[str] = Query(default=[], description="음식 종류 태그. 여러 개면 하나라도 붙은 식당"),
-    price_min: int | None = Query(default=None, ge=0),
-    price_max: int | None = Query(default=None, ge=0),
+    price_band: list[PriceBand] = Query(default=[], description="가격대. 여러 개면 하나라도 해당하는 식당"),
     visited: bool | None = None,
     session: Session = Depends(get_db),
 ) -> list[RestaurantListItem]:
-    if price_min is not None and price_max is not None and price_min > price_max:
-        raise HTTPException(status_code=422, detail="최저 가격이 최고 가격보다 클 수 없어요.")
-
     statement = apply_restaurant_filters(
         select(Restaurant).options(selectinload(Restaurant.tags.and_(Tag.user_id == CURRENT_USER_ID))),
         tags=[name.strip() for name in tag if name.strip()],
-        price_min=price_min,
-        price_max=price_max,
+        price_bands=price_band,
         visited=visited,
     )
     restaurants = session.scalars(statement.order_by(Restaurant.id)).all()
@@ -89,6 +85,7 @@ def list_restaurants(
             name=restaurant.name,
             tags=[tag.name for tag in restaurant.tags],
             price=restaurant.price,
+            location=restaurant.location,
             memo=restaurant.memo,
             visited=restaurant.visited,
             rating=restaurant.rating,
@@ -108,6 +105,7 @@ def create_restaurant(
         name=payload.name,
         tags=_get_tags(session, payload.tags),
         price=payload.price,
+        location=payload.location,
         memo=payload.memo,
         visited=payload.visited,
         rating=payload.rating,
@@ -138,6 +136,7 @@ def update_restaurant(
     restaurant.name = payload.name
     restaurant.tags = _get_tags(session, payload.tags)
     restaurant.price = payload.price
+    restaurant.location = payload.location
     restaurant.memo = payload.memo
     restaurant.visited = payload.visited
     restaurant.rating = payload.rating
