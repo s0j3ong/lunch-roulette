@@ -123,6 +123,7 @@ function RestaurantsPage() {
       <section aria-labelledby="restaurant-list-title">
         <div className="section-heading">
           <h1 id="restaurant-list-title">
+            <span aria-hidden="true">📒</span>
             내 식당 목록
             {!isLoading && !loadError && <span className="count-label">{restaurants.length}곳</span>}
           </h1>
@@ -144,6 +145,7 @@ function RestaurantsPage() {
           </div>
         ) : restaurants.length === 0 && isFiltered ? (
           <div className="empty-state">
+            <span className="empty-state-icon" aria-hidden="true">🔍</span>
             <p>조건에 맞는 식당이 없어요.</p>
             <p>음식 종류나 가격대를 바꿔 보세요.</p>
             <button className="secondary-button" type="button" onClick={resetFilters}>
@@ -152,6 +154,7 @@ function RestaurantsPage() {
           </div>
         ) : restaurants.length === 0 ? (
           <div className="empty-state">
+            <span className="empty-state-icon" aria-hidden="true">🍽️</span>
             <p>아직 저장한 식당이 없어요.</p>
             <p>오른쪽 위의 "+ 식당 추가"로 첫 식당을 저장해 보세요.</p>
           </div>

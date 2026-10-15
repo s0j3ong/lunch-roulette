@@ -100,6 +100,8 @@ PRD에 명시되지 않아 개발 계획에서 정한 기본안이다. 바꾸려
 | `--color-ink-muted` | `#6B5A2E` | 보조 글자색 |
 | `--color-danger` | `#B3261E` | 삭제, 오류 |
 
+꾸미기용 보조 토큰(`--color-primary-deep`, `--color-cream`, `--color-danger-soft`, `--color-overlay`, 그라데이션·그림자·모서리 반지름 토큰)도 `theme.css`에 있다. 글자색으로는 쓰지 않고, 이 배경들 위의 글자는 `--color-ink`, `--color-ink-muted`, `--color-danger`를 쓴다.
+
 룰렛 칸 색은 노랑·주황 계열의 온색 8가지를 돌려가며 쓴다.
 
 | 토큰 | 값 | 토큰 | 값 |

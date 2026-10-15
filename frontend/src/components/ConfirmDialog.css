@@ -1,15 +1,19 @@
 .confirm-dialog {
   width: min(100% - 2rem, 24rem);
   padding: 1.5rem;
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
+  border: 0;
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-modal);
   color: var(--color-ink);
 }
 
+.confirm-dialog[open] {
+  animation: modal-in 0.25s var(--ease-out) both;
+}
+
 .confirm-dialog::backdrop {
-  background: var(--color-ink);
-  opacity: 0.45;
+  background: var(--color-overlay);
 }
 
 .confirm-dialog h2 {
@@ -31,4 +35,10 @@
   flex-wrap: wrap;
   gap: 0.5rem;
   margin-top: 1.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .confirm-dialog[open] {
+    animation: none;
+  }
 }

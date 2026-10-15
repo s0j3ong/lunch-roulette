@@ -93,7 +93,7 @@ frontend/src/           api/, components/, pages/, styles/theme.css
 | `--color-ink-muted` | `#6B5A2E` | 보조 글자 |
 | `--color-danger` | `#B3261E` | 삭제, 오류 |
 
-- 색상은 `theme.css`의 변수로만 쓴다. 다른 파일에 색상 값(`#...`)을 직접 적지 않는다.
+- 색상은 `theme.css`의 변수로만 쓴다. 다른 파일에 색상 값(`#...`, `rgba(...)`)을 직접 적지 않는다. 그림자·그라데이션·배경 보조 토큰도 `theme.css`에 둔다.
 - 노랑 배경 위의 글자는 항상 `--color-ink`다. 흰 글자는 대비가 부족해 쓰지 않는다.
 - 룰렛 칸 색은 `--wheel-1`~`--wheel-8`을 돌려가며 쓰고, 칸 글자는 `--color-ink`다.
 - 색에만 의존해 의미를 전달하지 않는다. 삭제 같은 위험 동작은 글자로도 드러낸다.

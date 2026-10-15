@@ -42,6 +42,9 @@ function AuthPage({ onAuthenticated }) {
 
   return (
     <section className="auth-card" aria-labelledby="auth-title">
+      <div className="auth-emoji" aria-hidden="true">
+        {isSignup ? '🥄' : '🍽️'}
+      </div>
       <h1 id="auth-title">{MODES[mode].title}</h1>
       <p className="auth-description">
         {isSignup ? '가입하면 내 식당 목록을 따로 저장할 수 있어요.' : '로그인하면 내가 저장한 식당으로 룰렛을 돌릴 수 있어요.'}

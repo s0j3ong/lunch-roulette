@@ -17,4 +17,26 @@
   --wheel-6: #FFD04D;
   --wheel-7: #F7B267;
   --wheel-8: #FFEDA0;
+
+  /* 꾸미기용 보조 토큰: 글자색으로는 쓰지 않는다. */
+  --color-primary-deep: #D99A00;
+  --color-cream: #FFF7D9;
+  --color-danger-soft: #FDECEA;
+  --color-overlay: rgba(43, 34, 8, 0.5);
+
+  --gradient-page: linear-gradient(180deg, #FFF3C4 0%, #FFFCF0 360px);
+  --gradient-header: linear-gradient(135deg, #F5B800 0%, #FFD04D 100%);
+  --gradient-card: linear-gradient(180deg, #FFFFFF 0%, #FFFDF5 100%);
+
+  --shadow-card: 0 1px 2px rgba(107, 90, 46, 0.08), 0 6px 20px rgba(138, 95, 0, 0.1);
+  --shadow-hover: 0 2px 4px rgba(107, 90, 46, 0.1), 0 14px 30px rgba(138, 95, 0, 0.18);
+  --shadow-pointer: 0 3px 3px rgba(43, 34, 8, 0.35);
+  --shadow-modal: 0 20px 60px rgba(43, 34, 8, 0.35);
+
+  --radius-sm: 0.7rem;
+  --radius-md: 1.1rem;
+  --radius-lg: 1.6rem;
+  --radius-pill: 999px;
+
+  --ease-out: cubic-bezier(0.2, 0.8, 0.2, 1);
 }

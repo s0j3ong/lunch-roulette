@@ -3,10 +3,15 @@
   width: min(100% - 2rem, 34rem);
   max-height: calc(100dvh - 2rem);
   padding: 0;
-  border: 1px solid var(--color-border);
-  border-radius: 1rem;
+  border: 0;
+  border-radius: var(--radius-lg);
   background: var(--color-surface);
+  box-shadow: var(--shadow-modal);
   color: var(--color-ink);
+}
+
+.modal[open] {
+  animation: modal-in 0.25s var(--ease-out) both;
 }
 
 .modal-small {
@@ -14,8 +19,7 @@
 }
 
 .modal::backdrop {
-  background: var(--color-ink);
-  opacity: 0.45;
+  background: var(--color-overlay);
 }
 
 .modal-header {
@@ -28,7 +32,7 @@
   gap: 0.75rem;
   padding: 1rem 1.25rem;
   border-bottom: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--color-primary-soft);
 }
 
 .modal-header h2 {
@@ -40,9 +44,9 @@
 .modal-close {
   flex: 0 0 auto;
   min-height: 2.25rem;
-  padding: 0.3rem 0.75rem;
+  padding: 0.3rem 0.85rem;
   border: 1px solid var(--color-border);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--color-surface);
   color: var(--color-ink);
   font-weight: 600;
@@ -57,6 +61,17 @@
   padding: 1.25rem;
 }
 
+@keyframes modal-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 @media (max-width: 480px) {
   .modal {
     width: calc(100% - 1rem);
@@ -64,5 +79,11 @@
 
   .modal-body {
     padding: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .modal[open] {
+    animation: none;
   }
 }

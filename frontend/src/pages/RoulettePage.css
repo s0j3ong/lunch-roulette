@@ -5,17 +5,20 @@
 
 .roulette-conditions,
 .roulette-stage {
-  padding: 1.5rem;
+  padding: 1.75rem;
   border: 1px solid var(--color-border);
-  border-radius: 1rem;
-  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  background: var(--gradient-card);
+  box-shadow: var(--shadow-card);
+  animation: rise-in 0.35s var(--ease-out) both;
 }
 
 .roulette-stage {
   display: grid;
   justify-items: center;
-  gap: 1rem;
+  gap: 1.1rem;
   text-align: center;
+  animation-delay: 0.08s;
 }
 
 .roulette-stage h2 {
@@ -24,14 +27,13 @@
   font-size: 1.35rem;
 }
 
-.spin-button {
-  width: min(100%, 22rem);
-  font-size: 1.1rem;
-}
-
 .roulette-conditions h1 {
   margin: 0;
-  font-size: 1.5rem;
+  font-size: 1.55rem;
+}
+
+.heading-icon {
+  margin-right: 0.35rem;
 }
 
 .section-description {
@@ -41,8 +43,15 @@
 
 .condition-fields {
   display: grid;
-  gap: 1.25rem;
+  gap: 1.5rem;
+  min-width: 0;
   margin-top: 1.25rem;
+  padding: 0;
+  border: 0;
+}
+
+.condition-fields:disabled {
+  opacity: 0.6;
 }
 
 .error-text {
@@ -59,18 +68,14 @@
 @media (max-width: 480px) {
   .roulette-conditions,
   .roulette-stage {
-    padding: 1rem;
+    padding: 1.1rem;
   }
 }
 
-.condition-fields {
-  min-width: 0;
-  padding: 0;
-  border: 0;
-}
-
-.condition-fields:disabled {
-  opacity: 0.6;
+.spin-button {
+  width: min(100%, 22rem);
+  min-height: 3.25rem;
+  font-size: 1.15rem;
 }
 
 .roulette-result {
@@ -78,11 +83,13 @@
 }
 
 .result-card {
-  padding: 1rem;
+  padding: 1.25rem 1rem;
   border: 2px solid var(--color-primary);
-  border-radius: 0.75rem;
+  border-radius: var(--radius-md);
   background: var(--color-primary-soft);
+  box-shadow: var(--shadow-card);
   color: var(--color-ink);
+  animation: result-pop 0.45s var(--ease-out) both;
 }
 
 .result-card.confirmed {
@@ -97,7 +104,7 @@
 
 .result-card h3 {
   margin: 0.25rem 0;
-  font-size: 1.6rem;
+  font-size: 1.8rem;
   overflow-wrap: anywhere;
 }
 
@@ -106,11 +113,32 @@
   margin: 0.25rem 0 0;
 }
 
+.result-memo {
+  display: inline-block;
+  padding: 0.35rem 0.8rem;
+  border-radius: var(--radius-sm);
+  background: var(--color-surface);
+}
+
+@keyframes result-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  60% {
+    transform: scale(1.03);
+  }
+  100% {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .spin-actions {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 0.6rem;
   width: 100%;
 }
 
@@ -123,9 +151,10 @@
 .roulette-stage .empty-state {
   width: 100%;
   box-sizing: border-box;
-  padding: 1.25rem 1rem;
-  border: 1px dashed var(--color-border);
-  border-radius: 0.75rem;
+  padding: 1.5rem 1rem;
+  border: 2px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-cream);
   color: var(--color-ink-muted);
 }
 
@@ -148,4 +177,12 @@
 .last-candidate {
   color: var(--color-ink);
   font-weight: 600;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .roulette-conditions,
+  .roulette-stage,
+  .result-card {
+    animation: none;
+  }
 }

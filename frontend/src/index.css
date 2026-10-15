@@ -2,7 +2,7 @@
   font-family: system-ui, sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
-  line-height: 1.5;
+  line-height: 1.55;
   word-break: keep-all;
   color: var(--color-ink);
   background: var(--color-bg);
@@ -10,9 +10,15 @@
 
 body {
   margin: 0;
-  background: var(--color-bg);
+  background: var(--color-bg) var(--gradient-page) no-repeat;
   min-width: 320px;
   min-height: 100vh;
+}
+
+h1,
+h2,
+h3 {
+  letter-spacing: -0.01em;
 }
 
 button {
@@ -29,16 +35,22 @@ button {
 .danger-button,
 .danger-outline-button {
   min-height: 2.75rem;
-  padding: 0.65rem 1rem;
+  padding: 0.65rem 1.25rem;
   border: 1px solid transparent;
-  border-radius: 0.55rem;
+  border-radius: var(--radius-pill);
   color: var(--color-ink);
   font-weight: 700;
   cursor: pointer;
+  transition:
+    transform 0.15s var(--ease-out),
+    box-shadow 0.15s var(--ease-out),
+    background-color 0.15s,
+    border-color 0.15s;
 }
 
 .primary-button {
   background: var(--color-primary);
+  box-shadow: 0 3px 0 var(--color-primary-deep);
 }
 
 .secondary-button {
@@ -59,9 +71,23 @@ button {
   color: var(--color-danger);
 }
 
-.primary-button:hover:not(:disabled),
+.danger-outline-button:hover:not(:disabled) {
+  background: var(--color-danger-soft);
+}
+
+.primary-button:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 0 var(--color-primary-deep);
+}
+
+.primary-button:active:not(:disabled) {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 var(--color-primary-deep);
+}
+
 .secondary-button:hover:not(:disabled) {
   border-color: var(--color-primary-strong);
+  background: var(--color-cream);
 }
 
 button:disabled {
@@ -71,4 +97,43 @@ button:disabled {
 
 a {
   color: var(--color-primary-strong);
+}
+
+/* 화면이 열릴 때 부드럽게 떠오르는 효과 */
+@keyframes rise-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.rise-in {
+  animation: rise-in 0.35s var(--ease-out) both;
+}
+
+/* 동작 줄이기를 켠 사용자에게는 버튼·카드의 움직임을 없앤다. (룰렛 회전은 따로 줄인다.) */
+@media (prefers-reduced-motion: reduce) {
+  .rise-in {
+    animation: none;
+  }
+
+  .primary-button,
+  .secondary-button,
+  .danger-button,
+  .danger-outline-button,
+  .restaurant-card,
+  .filter-chip,
+  .tag-option {
+    transition: none;
+  }
+
+  .primary-button:hover:not(:disabled),
+  .primary-button:active:not(:disabled),
+  .restaurant-card:hover {
+    transform: none;
+  }
 }

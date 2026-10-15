@@ -64,7 +64,12 @@ function App() {
     <>
       <header className="app-header">
         <div className="app-header-inner">
-          <p className="app-name">오늘 뭐 먹지?</p>
+          <p className="app-name">
+            <span className="app-name-icon" aria-hidden="true">
+              🍽️
+            </span>
+            오늘 뭐 먹지?
+          </p>
           {user && (
             <div className="app-header-actions">
               <nav className="app-nav" aria-label="화면 이동">

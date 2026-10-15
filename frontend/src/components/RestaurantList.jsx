@@ -34,13 +34,19 @@ function RestaurantList({ restaurants, onOpen }) {
             )}
             <span className="restaurant-card-meta">
               <span>
-                <span className="meta-label">가격대</span> {priceText(restaurant.price)}
+                <span className="meta-label">
+                  <span aria-hidden="true">💰</span> 가격대
+                </span> {priceText(restaurant.price)}
               </span>
               <span>
-                <span className="meta-label">위치</span> {restaurant.location || '없음'}
+                <span className="meta-label">
+                  <span aria-hidden="true">📍</span> 위치
+                </span> {restaurant.location || '없음'}
               </span>
             </span>
-            {restaurant.memo && <span className="restaurant-card-memo">{previewMemo(restaurant.memo)}</span>}
+            {restaurant.memo && <span className="restaurant-card-memo">
+                <span aria-hidden="true">📝</span> {previewMemo(restaurant.memo)}
+              </span>}
           </button>
         </li>
       ))}

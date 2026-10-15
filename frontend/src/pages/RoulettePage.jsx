@@ -15,7 +15,10 @@ function ResultCard({ result, isConfirmed }) {
   const { winner } = result
   return (
     <article className={isConfirmed ? 'result-card confirmed' : 'result-card'}>
-      <p className="result-eyebrow">{isConfirmed ? '오늘은 여기서 먹어요!' : '오늘의 식당'}</p>
+      <p className="result-eyebrow">
+        <span aria-hidden="true">{isConfirmed ? '🎉 ' : '🍴 '}</span>
+        {isConfirmed ? '오늘은 여기서 먹어요!' : '오늘의 식당'}
+      </p>
       <h3>{winner.name}</h3>
       <p className="result-meta">
         {[
@@ -129,7 +132,12 @@ function RoulettePage() {
   return (
     <div className="roulette-page">
       <section className="roulette-conditions" aria-labelledby="conditions-title">
-        <h1 id="conditions-title">오늘의 조건</h1>
+        <h1 id="conditions-title">
+          <span className="heading-icon" aria-hidden="true">
+            🥢
+          </span>
+          오늘의 조건
+        </h1>
         <p className="section-description">조건을 고르지 않으면 저장한 모든 식당이 후보예요.</p>
         {optionsError && <p className="error-text" role="alert">{optionsError}</p>}
         {!tags && !optionsError && <p role="status">조건을 불러오고 있어요.</p>}
@@ -145,7 +153,7 @@ function RoulettePage() {
                   type="button"
                   onClick={() => setIsTagRouletteOpen(true)}
                 >
-                  랜덤 정하기
+                  <span aria-hidden="true">🎲</span> 랜덤 정하기
                 </button>
               }
             />
@@ -170,7 +178,12 @@ function RoulettePage() {
       </Modal>
 
       <section className="roulette-stage" aria-labelledby="wheel-title">
-        <h2 id="wheel-title">식당 룰렛</h2>
+        <h2 id="wheel-title">
+          <span className="heading-icon" aria-hidden="true">
+            🎡
+          </span>
+          식당 룰렛
+        </h2>
         {restaurantCount === 0 ? (
           <div className="empty-state">
             <p>아직 저장한 식당이 없어요.</p>
