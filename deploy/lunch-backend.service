@@ -1,0 +1,18 @@
+# backend 서버(EC2): uvicorn systemd 서비스
+# 설치 위치: /etc/systemd/system/lunch-backend.service
+# 코드는 /opt/lunch/backend, 가상환경은 /opt/lunch/backend/.venv 에 둔다.
+# DB 접속 정보는 /opt/lunch/backend/.env 에만 있고(앱이 직접 읽음), 이 파일에는 적지 않는다.
+[Unit]
+Description=Lunch roulette backend (FastAPI)
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=ec2-user
+WorkingDirectory=/opt/lunch/backend
+ExecStart=/opt/lunch/backend/.venv/bin/uvicorn app.main:app --host 10.10.20.20 --port 8000
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target
